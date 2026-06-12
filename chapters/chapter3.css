@@ -1,0 +1,194 @@
+/* ==========================================================================
+   CHAPTER 3 — Styles
+   Scoped under .view[data-view="chapter3"] to avoid affecting other chapters.
+   ========================================================================== */
+
+.view[data-view="chapter3"] {
+  padding: var(--nav-height) 0 0;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden;
+
+  /* ── Surfaces (inherits global tokens from menu.css) ── */
+  --black: var(--color-bg);
+  --white: var(--color-bg-inverse);
+  --grey: rgba(255, 255, 255, 0.25);
+  --grey-dim: rgba(255, 255, 255, 0.08);
+
+  /* UI chrome */
+  --track: 2.5px;
+  --thumb: 12px;
+  --thumb-ring: 2px;
+  --track-len: min(72cqh, 300px);
+  --switch-hit: calc(var(--thumb) + var(--thumb-ring) * 4);
+  --switch-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  background: var(--black);
+  color: var(--color-text-body);
+}
+
+.view[data-view="chapter3"] .chapter__content--audio {
+  width: 100%;
+  height: calc(100vh - var(--nav-height));
+  max-width: none;
+  min-height: 0;
+  padding: 0;
+  border: none;
+}
+
+.view[data-view="chapter3"] .chapter3-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.view[data-view="chapter3"] .wave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: var(--black);
+  cursor: pointer;
+}
+
+.view[data-view="chapter3"] #waveCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.view[data-view="chapter3"] .wave.is-tuning #waveCanvas {
+  filter: contrast(1.06);
+}
+
+.view[data-view="chapter3"] .switch {
+  container-type: size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: var(--black);
+}
+
+.view[data-view="chapter3"] .switch__track {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--switch-hit);
+  height: var(--track-len);
+}
+
+.view[data-view="chapter3"] .switch__track::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: var(--track);
+  transform: translateX(-50%);
+  background: var(--white);
+  pointer-events: none;
+}
+
+.view[data-view="chapter3"] #freqSlider {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--track-len);
+  height: var(--switch-hit);
+  margin: 0;
+  transform: translate(-50%, -50%) rotate(-90deg) scaleY(-1);
+  transform-origin: center center;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.view[data-view="chapter3"] #freqSlider::-webkit-slider-runnable-track,
+.view[data-view="chapter3"] #freqSlider::-moz-range-track {
+  height: var(--track);
+  background: transparent;
+  border: none;
+}
+
+.view[data-view="chapter3"] #freqSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--thumb);
+  height: var(--thumb);
+  margin-top: calc(
+    (var(--track) - var(--thumb) - var(--thumb-ring) * 2) / 2
+  );
+  border-radius: 50%;
+  background: var(--white);
+  border: var(--thumb-ring) solid var(--white);
+  box-sizing: content-box;
+  transition:
+    box-shadow 0.22s var(--switch-ease),
+    transform 0.22s var(--switch-ease),
+    border-width 0.22s var(--switch-ease);
+}
+
+.view[data-view="chapter3"] #freqSlider::-moz-range-thumb {
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  background: var(--white);
+  border: var(--thumb-ring) solid var(--white);
+  box-sizing: content-box;
+  transition:
+    box-shadow 0.22s var(--switch-ease),
+    transform 0.22s var(--switch-ease),
+    border-width 0.22s var(--switch-ease);
+}
+
+.view[data-view="chapter3"] #freqSlider:hover::-webkit-slider-thumb {
+  border-width: calc(var(--thumb-ring) * 1.25);
+}
+
+.view[data-view="chapter3"] #freqSlider:hover::-moz-range-thumb {
+  border-width: calc(var(--thumb-ring) * 1.25);
+}
+
+.view[data-view="chapter3"] #freqSlider:active::-webkit-slider-thumb {
+  transform: scale(0.92);
+  border-width: calc(var(--thumb-ring) * 0.85);
+}
+
+.view[data-view="chapter3"] #freqSlider:active::-moz-range-thumb {
+  transform: scale(0.92);
+  border-width: calc(var(--thumb-ring) * 0.85);
+}
+
+.view[data-view="chapter3"] #freqSlider:focus-visible {
+  outline: none;
+}
+
+.view[data-view="chapter3"] #freqSlider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 1px var(--white);
+}
+
+.view[data-view="chapter3"] #freqSlider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 1px var(--white);
+}
+
+@media (max-width: 640px) {
+  .view[data-view="chapter3"] .chapter3-stage {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
+  }
+
+  .view[data-view="chapter3"] {
+    --track-len: min(68cqh, 180px);
+    --thumb: 10px;
+    --thumb-ring: 1.75px;
+  }
+}

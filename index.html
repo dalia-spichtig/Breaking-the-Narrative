@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navigation</title>
+
+  <!-- Chapter 2 — optional pixel font for « lire entre les lignes » posts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Global styles: layout, navigation, transitions -->
+  <link rel="stylesheet" href="menu.css">
+
+  <!-- Chapter-specific styles — edit these files to style each chapter -->
+  <link rel="stylesheet" href="chapters/chapter1.css">
+  <link rel="stylesheet" href="chapters/chapter2.css">
+  <link rel="stylesheet" href="chapters/chapter3.css">
+</head>
+<body>
+
+  <!--
+    VIEW SYSTEM
+    Each <section> is a full-screen "page".
+    Only one view is visible at a time (controlled by menu.js via data-view attributes).
+    To add a new chapter: duplicate a chapter section, link its CSS/JS, and register it in menu.js.
+  -->
+
+  <!-- INTRO — no navigation bar -->
+  <section id="view-intro" class="view view--active" data-view="intro" aria-label="Introduction">
+    <div class="intro">
+      <p class="intro__eyebrow">Projet de diplôme</p>
+      <h1 class="intro__title">Breaking <br> the Narrative
+      </h1>
+      <p class="intro__text">
+        Des conseils, des podcasts, des vidéos. Derrière les discours masculinistes, quels sont les véritables enjeux ?<br>
+        
+      </p>
+      <button class="btn btn--primary" data-action="enter" type="button">
+        C'est parti
+      </button>
+    </div>
+  </section>
+
+  <!-- GLOBAL NAV — hidden on intro, visible everywhere else -->
+  <nav id="global-nav" class="nav" aria-label="Main navigation" hidden>
+    <a class="nav__brand" href="#" data-nav="selection">Navigation</a>
+    <ul class="nav__links">
+      <li><a class="nav__link" href="#" data-nav="selection">Chapters</a></li>
+      <li><a class="nav__link" href="#" data-nav="chapter1">Chapter 1</a></li>
+      <li><a class="nav__link" href="#" data-nav="chapter2">Chapter 2</a></li>
+      <li><a class="nav__link" href="#" data-nav="chapter3">Chapter 3</a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN SELECTION — chapter cards -->
+  <section id="view-selection" class="view" data-view="selection" aria-label="Chapter selection">
+    <div class="selection">
+      <header class="selection__header">
+        <h2 class="selection__title">Chapters</h2>
+        <p class="selection__subtitle">Choose a chapter to begin.</p>
+      </header>
+
+      <div class="selection__grid">
+        <button class="card" data-nav="chapter1" type="button">
+          <span class="card__number">01</span>
+          <span class="card__title">Chapter 1</span>
+          <span class="card__hint">Enter →</span>
+        </button>
+        <button class="card" data-nav="chapter2" type="button">
+          <span class="card__number">02</span>
+          <span class="card__title">Chapter 2</span>
+          <span class="card__hint">Enter →</span>
+        </button>
+        <button class="card" data-nav="chapter3" type="button">
+          <span class="card__number">03</span>
+          <span class="card__title">Chapter 3</span>
+          <span class="card__hint">Enter →</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 1 — multi-stage reveal (Stage 1 surface + Stage 3 deep layer) -->
+  <section id="view-chapter1" class="view" data-view="chapter1" aria-label="Chapter 1">
+    <div class="chapter__content chapter__content--stage" id="chapter1-content">
+      <div id="app" class="app">
+
+        <div class="stages-root" id="stages-root" aria-live="polite">
+
+          <!-- Stage 3 — bottom layer (revealed through scanner) -->
+          <article
+            class="stage"
+            id="stage-3"
+            data-stage-id="3"
+            data-stage-label="Stage 3"
+            aria-label="Stage 3 — information profonde"
+          >
+            <div class="stage__inner stage__inner--three">
+              <div class="stage-3-scene">
+                <div class="stage-3-overlays" aria-hidden="true"></div>
+
+                <div class="stage__media stage__media--stage-3">
+                  <video
+                    id="video-stage-3"
+                    class="stage__video stage__video--slave"
+                    src="media/videoStage3_sub.mp4"
+                    loop
+                    playsinline
+                    preload="auto"
+                    muted
+                    aria-label="Vidéo Stage 3 — silent mirror"
+                  ></video>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Stage 1 — top layer (default visible surface) -->
+          <article
+            class="stage"
+            id="stage-1"
+            data-stage-id="1"
+            data-stage-label="Stage 1"
+            aria-label="Stage 1 — surface"
+          >
+            <div class="stage__inner stage__inner--one">
+              <div class="stage__media">
+                <video
+                  id="video-stage-1"
+                  class="stage__video stage__video--master"
+                  src="media/videoStage1.mp4"
+                  loop
+                  playsinline
+                  preload="auto"
+                  aria-label="Vidéo Stage 1 — audio source"
+                ></video>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+        <div
+          id="reveal-glow"
+          class="reveal-glow"
+          aria-hidden="true"
+        ></div>
+
+        <aside id="debug-hud" class="debug-hud" aria-label="Debug information">
+          <p class="debug-hud__title">Debug</p>
+          <ul class="debug-hud__list">
+            <li><kbd>1</kbd> — Stage 1 seul (debug)</li>
+            <li><kbd>3</kbd> — Stage 3 seul (debug)</li>
+            <li><kbd>Clic</kbd> — Activer / désactiver le portail (suit la souris)</li>
+            <li><kbd>M</kbd> — Couper / activer le son (vidéo Stage 1)</li>
+            <li><kbd>Échap</kbd> — Quitter le mode debug</li>
+          </ul>
+          <p id="debug-hud-status" class="debug-hud__status">Mode : normal</p>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 2 — social feed with press-and-hold reveal posts -->
+  <section id="view-chapter2" class="view" data-view="chapter2" aria-label="Chapter 2">
+    <div class="chapter__content chapter__content--feed" id="chapter2-content">
+      <div class="chapter2-app">
+
+        <aside class="sidebar sidebar--left">
+          <div class="logo">𝕏</div>
+          <nav class="feed-nav" aria-label="Navigation du fil">
+            <a href="#" class="feed-nav__link feed-nav__link--active">Accueil</a>
+            <a href="#" class="feed-nav__link">Explorer</a>
+            <a href="#" class="feed-nav__link">Notifications</a>
+            <a href="#" class="feed-nav__link">Messages</a>
+          </nav>
+          <button class="btn-post" type="button">Poster</button>
+        </aside>
+
+        <main class="feed">
+          
+          <div id="feed-posts" class="feed__posts"></div>
+        </main>
+
+        <aside class="sidebar sidebar--right">
+          <div class="search">
+            <span class="search__icon" aria-hidden="true">⌕</span>
+            <input type="search" placeholder="Rechercher" />
+          </div>
+          <section class="panel">
+            <h2>Tendances</h2>
+            <ul class="trends">
+              <li><span class="trends__meta">Tendance · France</span><strong>#Hype</strong><span class="trends__meta">12,4 k posts</span></li>
+              <li><span class="trends__meta">Tendance · Culture</span><strong>#Surfait</strong><span class="trends__meta">8,1 k posts</span></li>
+              <li><span class="trends__meta">Tendance · Médias</span><strong>#DéjàVu</strong><span class="trends__meta">5,7 k posts</span></li>
+            </ul>
+          </section>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER 3 — dual-track waveform + frequency crossfade -->
+  <section id="view-chapter3" class="view" data-view="chapter3" aria-label="Chapter 3">
+    <div class="chapter__content chapter__content--audio" id="chapter3-content">
+      <main class="chapter3-stage">
+
+        <section class="wave panel--wave" aria-label="Waveform">
+          <canvas id="waveCanvas"></canvas>
+        </section>
+
+        <aside class="switch" aria-label="Frequency crossfade">
+          <div class="switch__track">
+            <input
+              type="range"
+              id="freqSlider"
+              min="0"
+              max="100"
+              value="0"
+              aria-label="Frequency crossfade"
+            />
+          </div>
+        </aside>
+
+      </main>
+    </div>
+  </section>
+
+  <!-- Core navigation logic -->
+  <script src="menu.js" defer></script>
+
+  <!-- Chapter-specific scripts — each exports an init hook called on view enter -->
+  <script src="chapters/chapter1.js" defer></script>
+  <script src="chapters/chapter2.js" defer></script>
+  <script src="chapters/chapter3.js" defer></script>
+</body>
+</html>
