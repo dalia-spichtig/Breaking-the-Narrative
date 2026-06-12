@@ -146,6 +146,18 @@ ul {
   z-index: 2;
 }
 
+#title-screen {
+  opacity:1 !important;
+  visibility: visible !important;
+  z-index: 100 !important;
+  padding-top: unset !important;
+}
+#title-screen-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* ==========================================================================
    GLOBAL NAVIGATION
    Persistent bar — visible on selection + chapters, hidden on intro.

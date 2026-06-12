@@ -92,7 +92,17 @@
    * Delegated click handler for all navigation triggers.
    * Elements use data-nav="viewName" or data-action="enter".
    */
+
+  let TITLE_PAGE = true;
+
   function handleClick(event) {
+
+    if (TITLE_PAGE) {
+      document.getElementById("title-screen").style.display = "none";
+      TITLE_PAGE = false;
+      return;
+    }
+
     const navTarget = event.target.closest("[data-nav]");
     const action = event.target.closest("[data-action]");
 
@@ -123,4 +133,10 @@
 
   /* Expose navigateTo globally so chapter scripts can use it if needed */
   window.AppNavigation = { navigateTo: navigateTo, syncNavHeight: syncNavHeight };
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const page = urlParams.get("page");
+  if (page && page === "right") {
+    document.getElementById("title-screen-image").src = "media/wallpaper2.png";
+  } 
 })();

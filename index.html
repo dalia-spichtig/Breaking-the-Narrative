@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Navigation</title>
+  <title>Breaking the Narrative</title>
 
   <!-- Chapter 2 — optional pixel font for « lire entre les lignes » posts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +26,10 @@
     Only one view is visible at a time (controlled by menu.js via data-view attributes).
     To add a new chapter: duplicate a chapter section, link its CSS/JS, and register it in menu.js.
   -->
+<div id="title-screen" class="view" data-view="title-screen" aria-label="Title screen">
+    <img src="media/wallpaper1.png" alt="Title screen" id="title-screen-image">
+</div>
+
 
   <!-- INTRO — no navigation bar -->
   <section id="view-intro" class="view view--active" data-view="intro" aria-label="Introduction">
@@ -48,9 +52,9 @@
     <a class="nav__brand" href="#" data-nav="selection">Navigation</a>
     <ul class="nav__links">
       <li><a class="nav__link" href="#" data-nav="selection">Chapters</a></li>
-      <li><a class="nav__link" href="#" data-nav="chapter1">Chapter 1</a></li>
-      <li><a class="nav__link" href="#" data-nav="chapter2">Chapter 2</a></li>
-      <li><a class="nav__link" href="#" data-nav="chapter3">Chapter 3</a></li>
+      <li><a class="nav__link" href="#" data-nav="chapter1">Chapitre1</a></li>
+      <li><a class="nav__link" href="#" data-nav="chapter2">Chapitre 2</a></li>
+      <li><a class="nav__link" href="#" data-nav="chapter3">Chapitre 3</a></li>
     </ul>
   </nav>
 
