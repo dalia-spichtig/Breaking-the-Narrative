@@ -12,38 +12,48 @@
    ═══════════════════════════════════════════════════════════ */
 
 // Exactement 5 posts — chacun avec texte de surface + vérité cachée
+//
+// comments — tu choisis combien et lesquels apparaissent sous chaque post :
+//   • nombre seul              → index dans COMMENTS (0 = premier commentaire)
+//   • { index, user? }         → commentaire du pool + auteur optionnel (index USERS)
+//   • { lines, hidden, user? } → commentaire écrit directement sur le post
+//   • []                       → aucune réponse
 const POSTS = [
   {
     lines: [
-      "Franchement je comprends pas le hype.",
-      "C'est vrmt de la merde.",
+      "Si les viols sont majoritairement commis par des hommes, ce n’est pas parce que l’homme est “éduqué à violer”.",
+      "C’est parce qu’il est biologiquement plus fort. Point.",
     ],
     hidden:
-      "J'ai passé six heures dessus et j'ai pleuré. Je fais semblant de détester pour ne pas passer pour une groupie.",
+      "1. Le viol n'est pas une fatalité biologique, mais le produit d'un système. Le sexisme, et les violences qui en découlent comme le viol, n'est pas une fatalité liée à la biologie : c'est une construction sociale. Les sources expliquent que la violence masculine prend racine dans trois « incubateurs » : la famille, l'école et le numérique",
+    comments: [0, 1, 2],
   },
   {
     lines: [
-      "Pourquoi tout le monde en parle ?",
-      "C'est juste du bruit médiatique.",
+      "Ce réseau commence déjà à me déprimer...",
+      "Il faut que je retourne sur tiktok d'urgence les féministes me font peur ici",
     ],
     hidden:
       "Je l'ai reposté trois fois cette semaine. Mes potes pensent que je m'en fous complètement.",
+    comments: [2, 3],
   },
   {
     lines: [
-      "Mouais… rien de spécial.",
-      "On dirait du déjà-vu.",
+      "Bodycount c'est pas important",
+      "Vous êtes juste gay.",
     ],
     hidden:
       "Ça me rappelle mon enfance mot pour mot. Je n'ose pas le dire publiquement.",
+    comments: [4, 0],
   },
   {
     lines: [
-      "C'est surestimé à mort.",
-      "Je vois pas l'intérêt.",
+      "L'un joue avec une balle, l'autre avec des boules. Dans tout les cas, cela démontre simplement à quel point l'argent est accessible partout.",
+      "Aujourd'hui, il n'y a plus aucune excuse pour ne pas devenir riche.",
     ],
     hidden:
       "J'ai acheté les billets. Deux fois. Ne le répétez à personne.",
+    comments: [1, 2, 3],
   },
   {
     lines: [
@@ -52,34 +62,44 @@ const POSTS = [
     ],
     hidden:
       "C'est le seul truc qui m'a fait sentir vivant cette année. Point.",
+    comments: [3, 4],
+  },
+  {
+    lines: [
+      "Encore un truc surfait.",
+      "Bof, passez votre chemin.",
+    ],
+    hidden:
+      "C'est le seul truc qui m'a fait sentir vivant cette année. Point.",
+    comments: [3, 4],
   },
 ];
 
-// Réponses bots — même structure surface + vérité cachée que les posts
+// Pool de commentaires réutilisables — référencés par index dans POSTS[].comments
 const COMMENTS = [
   {
     lines: [
-      "Totalement d'accord avec l'avis initial.",
-      "Il faut arrêter de forcer avec ce truc.",
+      "Un homme doit savoir qu’en franchissant cette ligne, il met sa vie en jeu.",
+      "Ils doivent apprendre a controler leur pulsions, si non c'est eux qui payent le prix",
     ],
     hidden:
-      "Je n'ai même pas lu le post, je commente juste pour gratter des impressions sur mon profil.",
+      "Dès l'enfance : On valorise chez les garçons la force, la compétition et le mépris de la faiblesse, tandis qu'on enseigne aux filles la douceur et la docilité. ",
   },
   {
     lines: [
-      "Je trouve ça hyper surcoté aussi.",
-      "Le design laisse vraiment à désirer.",
+      "Mais tlmt faut faire régner l’ordre à la manniere de Batman sur gotham.",
+      "De force et en punissant ceux qui enfreignent les règles.",
     ],
     hidden:
-      "En vrai je trouve ça magnifique, mais c'est plus facile de récolter des likes en étant aigri.",
+      "À l'école : Les garçons sont « spécialisés » très tôt dans l'expression de la violence et de l'incivilité (ils représentent 96,7 % des sanctions pour violence sur autrui au collège). Ce n'est pas leurs muscles qui dictent ce comportement, mais une éducation qui associe la masculinité à la domination",
   },
   {
     lines: [
-      "Merci pour ce retour honnête !",
-      "Ça change des avis sponsorisés.",
+      "C'est comme ça depuis les hommes des cavernes,",
+      "On vit dans une epoque ou les hommes ne sont plus vraiment des hommes !",
     ],
     hidden:
-      "Mon compte est géré par un script Python automatisé. Bip boup.",
+      "Le déni du consentement : Les techniques de séduction vendues dans la manosphère (PUA) apprennent explicitement aux hommes à contourner la résistance des femmes et à ignorer les signes de non-consentement.",
   },
   {
     lines: [
@@ -101,14 +121,14 @@ const COMMENTS = [
 
 // Faux profils (nom, pseudo, couleur avatar, initiale)
 const USERS = [
-  { name: "Lucas M.", handle: "lucas_m", color: "#1d9bf0", initial: "L" },
-  { name: "Camille R.", handle: "camille_r", color: "#7856ff", initial: "C" },
-  { name: "Théo B.", handle: "theo_b", color: "#f91880", initial: "T" },
-  { name: "Inès D.", handle: "ines_d", color: "#00ba7c", initial: "I" },
-  { name: "Noah P.", handle: "noah_p", color: "#ff7a00", initial: "N" },
-  { name: "Léa S.", handle: "lea_s", color: "#794bc4", initial: "L" },
-  { name: "Hugo V.", handle: "hugo_v", color: "#e0245e", initial: "H" },
-  { name: "Chloé A.", handle: "chloe_a", color: "#17bf63", initial: "C" },
+  { name: "Alex H.", handle: "le_roi_du_nord", color: "#ffffff", initial: "L" },
+  { name: "Hugo.", handle: "hugo_posay", color: "#ffffff", initial: "C" },
+  { name: "Wlke.", handle: "Elke", color: "#ffffff", initial: "T" },
+  { name: "VengeanceWW2.", handle: "luc", color: "#ffffff", initial: "I" },
+  { name: "Noah P.", handle: "noah_p", color: "#ffffff", initial: "N" },
+  { name: "Beerus Sama.", handle: "Beerusama", color: "#ffffff", initial: "L" },
+  { name: "TrashTalkeur.", handle: "TT", color: "#ffffff", initial: "H" },
+  { name: "Smeshreag6.", handle: "james", color: "#ffffff", initial: "C" },
 ];
 
 // Petites icônes SVG (reply, like)
@@ -132,17 +152,30 @@ function formatCountDisplay(n) {
   return n > 99 ? `${(n / 10).toFixed(1).replace(".", ",")} k` : String(n);
 }
 
-// 2 à 3 commentaires par post, tirés du pool COMMENTS
-function pickCommentsForPost(postId) {
-  const count = random(2, 3);
-  const start = (postId * 2) % COMMENTS.length;
-  const picked = [];
+// Transforme la config `comments` d'un post en données prêtes à afficher
+function resolvePostComments(post, postIndex) {
+  const refs = post.comments ?? [];
 
-  for (let i = 0; i < count; i++) {
-    picked.push(COMMENTS[(start + i) % COMMENTS.length]);
-  }
+  return refs.map((ref, commentIndex) => {
+    const defaultUser = postIndex + commentIndex + 1;
 
-  return picked;
+    if (typeof ref === "number") {
+      return { ...COMMENTS[ref], userIndex: defaultUser };
+    }
+
+    if (typeof ref.index === "number") {
+      return {
+        ...COMMENTS[ref.index],
+        userIndex: ref.user ?? defaultUser,
+      };
+    }
+
+    return {
+      lines: ref.lines,
+      hidden: ref.hidden,
+      userIndex: ref.user ?? defaultUser,
+    };
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -351,8 +384,8 @@ function setupHoldReveal(article) {
    CRÉATION D’UN POST — injecté dans #feed-posts (index.html)
    ═══════════════════════════════════════════════════════════ */
 
-function createComment(commentData, userIndex) {
-  const user = USERS[userIndex % USERS.length];
+function createComment(commentData) {
+  const user = USERS[commentData.userIndex % USERS.length];
   const contentHtml = buildBetweenLinesHTML(commentData.lines, commentData.hidden);
   const article = document.createElement("article");
 
@@ -442,11 +475,10 @@ function setupReplyToggle(article, commentsData) {
     event.stopPropagation();
 
     if (!commentsBuilt) {
-      const postId = Number(article.dataset.id);
       const fragment = document.createDocumentFragment();
 
-      commentsData.forEach((commentData, index) => {
-        const commentEl = createComment(commentData, postId + index + 1);
+      commentsData.forEach((commentData) => {
+        const commentEl = createComment(commentData);
         setupHoldReveal(commentEl);
         fragment.appendChild(commentEl);
       });
@@ -477,7 +509,7 @@ function initFeed() {
   const fragment = document.createDocumentFragment();
 
   POSTS.forEach((postData, index) => {
-    const commentsData = pickCommentsForPost(index);
+    const commentsData = resolvePostComments(postData, index);
     const article = createPost(postData, index, commentsData);
     setupHoldReveal(article);
     setupReplyToggle(article, commentsData);
