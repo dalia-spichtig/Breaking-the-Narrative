@@ -55,6 +55,50 @@ const POSTS = [
   },
 ];
 
+// Réponses bots — même structure surface + vérité cachée que les posts
+const COMMENTS = [
+  {
+    lines: [
+      "Totalement d'accord avec l'avis initial.",
+      "Il faut arrêter de forcer avec ce truc.",
+    ],
+    hidden:
+      "Je n'ai même pas lu le post, je commente juste pour gratter des impressions sur mon profil.",
+  },
+  {
+    lines: [
+      "Je trouve ça hyper surcoté aussi.",
+      "Le design laisse vraiment à désirer.",
+    ],
+    hidden:
+      "En vrai je trouve ça magnifique, mais c'est plus facile de récolter des likes en étant aigri.",
+  },
+  {
+    lines: [
+      "Merci pour ce retour honnête !",
+      "Ça change des avis sponsorisés.",
+    ],
+    hidden:
+      "Mon compte est géré par un script Python automatisé. Bip boup.",
+  },
+  {
+    lines: [
+      "C'est exactement ce que je me disais.",
+      "Rien de révolutionnaire cette année.",
+    ],
+    hidden:
+      "Je suis terrifié par le fait que tout le monde avance dans sa vie sauf moi.",
+  },
+  {
+    lines: [
+      "Passez votre chemin, circulez...",
+      "Il n'y a absolument rien à voir.",
+    ],
+    hidden:
+      "J'y pense jour et nuit. C'est la meilleure chose que j'ai vue de ma vie entière.",
+  },
+];
+
 // Faux profils (nom, pseudo, couleur avatar, initiale)
 const USERS = [
   { name: "Lucas M.", handle: "lucas_m", color: "#1d9bf0", initial: "L" },
@@ -67,10 +111,9 @@ const USERS = [
   { name: "Chloé A.", handle: "chloe_a", color: "#17bf63", initial: "C" },
 ];
 
-// Petites icônes SVG (reply, repost, like)
+// Petites icônes SVG (reply, like)
 const ICONS = {
   reply: '<svg viewBox="0 0 24 24"><path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01z"/></svg>',
-  repost: '<svg viewBox="0 0 24 24"><path d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"/></svg>',
   like: '<svg viewBox="0 0 24 24"><path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91z"/></svg>',
 };
 
@@ -85,9 +128,21 @@ function formatTime() {
   return `${hours}h`;
 }
 
-function formatCount() {
-  const n = random(2, 999);
+function formatCountDisplay(n) {
   return n > 99 ? `${(n / 10).toFixed(1).replace(".", ",")} k` : String(n);
+}
+
+// 2 à 3 commentaires par post, tirés du pool COMMENTS
+function pickCommentsForPost(postId) {
+  const count = random(2, 3);
+  const start = (postId * 2) % COMMENTS.length;
+  const picked = [];
+
+  for (let i = 0; i < count; i++) {
+    picked.push(COMMENTS[(start + i) % COMMENTS.length]);
+  }
+
+  return picked;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -144,7 +199,8 @@ function easeInOutQuart(t) {
 
 // Attache l’interaction maintien → révélation progressive
 function setupHoldReveal(article) {
-  const body = article.querySelector(".post__body");
+  const isComment = article.classList.contains("post--comment");
+  const body = article.querySelector(":scope > .post__body");
   if (!body) return;
 
   let progress = 0;
@@ -160,6 +216,16 @@ function setupHoldReveal(article) {
   function applyProgress(value) {
     progress = Math.max(0, Math.min(1, value));
     article.style.setProperty("--reveal-progress", progress.toFixed(4));
+  }
+
+  function isRevealTarget(event) {
+    if (!body.contains(event.target)) return false;
+    if (event.target.closest(".post__actions")) return false;
+    return true;
+  }
+
+  function isolateCommentEvent(event) {
+    if (isComment) event.stopPropagation();
   }
 
   function stopAnimation() {
@@ -233,7 +299,8 @@ function setupHoldReveal(article) {
   }
 
   body.addEventListener("pointerdown", (event) => {
-    if (event.target.closest(".post__actions")) return;
+    isolateCommentEvent(event);
+    if (!isRevealTarget(event)) return;
     if (isComplete) return;
 
     pressing = true;
@@ -243,7 +310,9 @@ function setupHoldReveal(article) {
   });
 
   body.addEventListener("pointerup", (event) => {
+    isolateCommentEvent(event);
     if (isComplete) return;
+    if (!pressing) return;
 
     pressing = false;
     article.classList.remove("is-pressing");
@@ -259,7 +328,9 @@ function setupHoldReveal(article) {
     }
   });
 
-  body.addEventListener("pointercancel", () => {
+  body.addEventListener("pointercancel", (event) => {
+    isolateCommentEvent(event);
+
     pressing = false;
     article.classList.remove("is-pressing");
     if (!isComplete && progress < 1) startCollapse();
@@ -267,7 +338,8 @@ function setupHoldReveal(article) {
 
   // Clic sur un post déjà ouvert → referme
   body.addEventListener("click", (event) => {
-    if (event.target.closest(".post__actions")) return;
+    isolateCommentEvent(event);
+    if (!isRevealTarget(event)) return;
     if (suppressClick || !isComplete) return;
     closeReveal();
   });
@@ -279,9 +351,32 @@ function setupHoldReveal(article) {
    CRÉATION D’UN POST — injecté dans #feed-posts (index.html)
    ═══════════════════════════════════════════════════════════ */
 
-function createPost(postData, id) {
+function createComment(commentData, userIndex) {
+  const user = USERS[userIndex % USERS.length];
+  const contentHtml = buildBetweenLinesHTML(commentData.lines, commentData.hidden);
+  const article = document.createElement("article");
+
+  article.className = "post post--interactive post--comment";
+
+  article.innerHTML = `
+    <div class="post__avatar" style="background:${user.color}">${user.initial}</div>
+    <div class="post__body">
+      <div class="post__header">
+        <span class="post__name">${user.name}</span>
+        <span class="post__handle">@${user.handle}</span>
+        <span class="post__time">· ${formatTime()}</span>
+      </div>
+      ${contentHtml}
+    </div>
+  `;
+
+  return article;
+}
+
+function createPost(postData, id, commentsData) {
   const user = USERS[id % USERS.length];
   const contentHtml = getPostContent(postData);
+  const likeCount = random(2, 999);
   const article = document.createElement("article");
 
   article.className = "post post--interactive";
@@ -296,15 +391,75 @@ function createPost(postData, id) {
       </div>
       ${contentHtml}
       <div class="post__actions">
-        <span class="post__action">${ICONS.reply} ${formatCount()}</span>
-        <span class="post__action">${ICONS.repost} ${formatCount()}</span>
-        <span class="post__action">${ICONS.like} ${formatCount()}</span>
+        <button type="button" class="post__action post__action--reply" aria-label="Voir les réponses" aria-expanded="false">
+          ${ICONS.reply}<span class="post__action__count">${commentsData.length}</span>
+        </button>
+        <button type="button" class="post__action post__action--like" aria-label="Aimer" aria-pressed="false" data-count="${likeCount}">
+          ${ICONS.like}<span class="post__action__count">${formatCountDisplay(likeCount)}</span>
+        </button>
       </div>
+    </div>
+    <div class="post__thread" aria-hidden="true">
+      <div class="post__thread-inner"></div>
     </div>
   `;
   article.dataset.id = String(id);
 
   return article;
+}
+
+function setupLikeToggle(article) {
+  const likeBtn = article.querySelector(".post__action--like");
+  const countEl = likeBtn?.querySelector(".post__action__count");
+  if (!likeBtn || !countEl) return;
+
+  let likeCount = Number(likeBtn.dataset.count);
+  let isLiked = false;
+
+  likeBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    isLiked = !isLiked;
+    likeCount += isLiked ? 1 : -1;
+    likeBtn.dataset.count = String(likeCount);
+    likeBtn.classList.toggle("is-liked", isLiked);
+    likeBtn.setAttribute("aria-pressed", String(isLiked));
+    countEl.textContent = formatCountDisplay(likeCount);
+  });
+}
+
+function setupReplyToggle(article, commentsData) {
+  const replyBtn = article.querySelector(".post__action--reply");
+  const thread = article.querySelector(".post__thread");
+  const threadInner = article.querySelector(".post__thread-inner");
+  if (!replyBtn || !thread || !threadInner) return;
+
+  let commentsBuilt = false;
+
+  replyBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!commentsBuilt) {
+      const postId = Number(article.dataset.id);
+      const fragment = document.createDocumentFragment();
+
+      commentsData.forEach((commentData, index) => {
+        const commentEl = createComment(commentData, postId + index + 1);
+        setupHoldReveal(commentEl);
+        fragment.appendChild(commentEl);
+      });
+
+      threadInner.appendChild(fragment);
+      commentsBuilt = true;
+    }
+
+    const isOpen = thread.classList.toggle("is-open");
+    replyBtn.classList.toggle("is-active", isOpen);
+    replyBtn.setAttribute("aria-expanded", String(isOpen));
+    thread.setAttribute("aria-hidden", String(!isOpen));
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -322,8 +477,11 @@ function initFeed() {
   const fragment = document.createDocumentFragment();
 
   POSTS.forEach((postData, index) => {
-    const article = createPost(postData, index);
+    const commentsData = pickCommentsForPost(index);
+    const article = createPost(postData, index, commentsData);
     setupHoldReveal(article);
+    setupReplyToggle(article, commentsData);
+    setupLikeToggle(article);
     fragment.appendChild(article);
   });
 

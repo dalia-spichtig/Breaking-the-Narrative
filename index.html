@@ -31,56 +31,75 @@
 </div>
 
 
-  <!-- INTRO — no navigation bar -->
-  <section id="view-intro" class="view view--active" data-view="intro" aria-label="Introduction">
-    <div class="intro">
-      <p class="intro__eyebrow">Projet de diplôme</p>
-      <h1 class="intro__title">Breaking <br> the Narrative
-      </h1>
-      <p class="intro__text">
-        Des conseils, des podcasts, des vidéos. Derrière les discours masculinistes, quels sont les véritables enjeux ?<br>
-        
+  <!-- INTRO — no navigation bar; 3-phase click sequence -->
+  <section id="view-intro" class="view view--active" data-view="intro" aria-label="Introduction" data-intro-phase="1">
+    <div class="intro intro--sequence intro--clickable" id="intro-sequence" tabindex="0" aria-label="Continuer">
+      <h1 class="intro__title intro__step intro__step--visible">Breaking <br> the Narrative</h1>
+      <p class="intro__text intro__step">
+        Des conseils, des podcasts, des vidéos. Derrière les discours masculinistes, quels sont les véritables enjeux ?
       </p>
-      <button class="btn btn--primary" data-action="enter" type="button">
-        C'est parti
-      </button>
     </div>
   </section>
 
   <!-- GLOBAL NAV — hidden on intro, visible everywhere else -->
   <nav id="global-nav" class="nav" aria-label="Main navigation" hidden>
-    <a class="nav__brand" href="#" data-nav="selection">Navigation</a>
+    <a class="nav__brand" href="#" data-nav="selection">Breaking the Narrative</a>
     <ul class="nav__links">
-      <li><a class="nav__link" href="#" data-nav="selection">Chapters</a></li>
-      <li><a class="nav__link" href="#" data-nav="chapter1">Chapitre1</a></li>
-      <li><a class="nav__link" href="#" data-nav="chapter2">Chapitre 2</a></li>
-      <li><a class="nav__link" href="#" data-nav="chapter3">Chapitre 3</a></li>
+      <li><a class="nav__link" href="#" data-nav="selection">Menu</a></li>
+      <li><a class="nav__link" href="#" data-nav="chapter1">Video</a></li>
+      <li><a class="nav__link" href="#" data-nav="chapter2">Twitter</a></li>
+      <li><a class="nav__link" href="#" data-nav="chapter3">Podcast</a></li>
     </ul>
   </nav>
+
+  <!-- Fullscreen chapter title interstitial (menu.js) -->
+  <div id="chapter-interstitial" class="chapter-interstitial" hidden aria-hidden="true">
+    <h2 class="chapter-interstitial__title">
+      <span class="chapter-interstitial__name"></span>
+    </h2>
+  </div>
 
   <!-- MAIN SELECTION — chapter cards -->
   <section id="view-selection" class="view" data-view="selection" aria-label="Chapter selection">
     <div class="selection">
       <header class="selection__header">
-        <h2 class="selection__title">Chapters</h2>
-        <p class="selection__subtitle">Choose a chapter to begin.</p>
+      
+        
       </header>
 
       <div class="selection__grid">
-        <button class="card" data-nav="chapter1" type="button">
-          <span class="card__number">01</span>
-          <span class="card__title">Chapter 1</span>
-          <span class="card__hint">Enter →</span>
+        <button class="card card--visual" data-nav="chapter1" type="button">
+          <img
+            class="card__image"
+            src="media/bulleVideo.png"
+            alt="Chapitre 1 — Video"
+            width="800"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
         </button>
-        <button class="card" data-nav="chapter2" type="button">
-          <span class="card__number">02</span>
-          <span class="card__title">Chapter 2</span>
-          <span class="card__hint">Enter →</span>
+        <button class="card card--visual" data-nav="chapter2" type="button">
+          <img
+            class="card__image"
+            src="media/bulleText.png"
+            alt="Chapitre 2 — Post twitter"
+            width="800"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
         </button>
-        <button class="card" data-nav="chapter3" type="button">
-          <span class="card__number">03</span>
-          <span class="card__title">Chapter 3</span>
-          <span class="card__hint">Enter →</span>
+        <button class="card card--visual" data-nav="chapter3" type="button">
+          <img
+            class="card__image"
+            src="media/bulleSon.png"
+            alt="Chapitre 3 — Podcast"
+            width="800"
+            height="800"
+            loading="lazy"
+            decoding="async"
+          />
         </button>
       </div>
     </div>
@@ -102,21 +121,54 @@
             aria-label="Stage 3 — information profonde"
           >
             <div class="stage__inner stage__inner--three">
-              <div class="stage-3-scene">
-                <div class="stage-3-overlays" aria-hidden="true"></div>
+              <div class="video-feed video-feed--slave" id="video-feed-slave">
 
-                <div class="stage__media stage__media--stage-3">
-                  <video
-                    id="video-stage-3"
-                    class="stage__video stage__video--slave"
-                    src="media/videoStage3_sub.mp4"
-                    loop
-                    playsinline
-                    preload="auto"
-                    muted
-                    aria-label="Vidéo Stage 3 — silent mirror"
-                  ></video>
-                </div>
+                  <section class="video-feed__slide" data-slide="0">
+                      <h2 class="stage-chapter-title">
+                        <span class="stage-chapter-title__label">Chapitre 1</span>
+                        <span class="stage-chapter-title__sep"> : </span>
+                        <span class="stage-chapter-title__name">true video</span>
+                      </h2>
+                    <div class="stage-3-scene">
+                      <div class="stage-3-overlays" aria-hidden="true"></div>
+                      <div class="stage__media stage__media--stage-3">
+                        <video
+                          id="video-stage-3-0"
+                          class="stage__video stage__video--slave"
+                          src="media/videoStage3_sub.mp4"
+                          loop
+                          playsinline
+                          preload="auto"
+                          muted
+                          aria-label="Vidéo Stage 3 — slide 1"
+                        ></video>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="video-feed__slide" data-slide="1">
+                      <h2 class="stage-chapter-title">
+                        <span class="stage-chapter-title__label">Chapitre 1</span>
+                        <span class="stage-chapter-title__sep"> : </span>
+                        <span class="stage-chapter-title__name">true video</span>
+                      </h2>
+                    <div class="stage-3-scene">
+                      <div class="stage-3-overlays" aria-hidden="true"></div>
+                      <div class="stage__media stage__media--stage-3">
+                        <video
+                          id="video-stage-3-1"
+                          class="stage__video stage__video--slave"
+                          src="media/video2B.mov"
+                          loop
+                          playsinline
+                          preload="auto"
+                          muted
+                          aria-label="Vidéo Stage 3 — slide 2"
+                        ></video>
+                      </div>
+                    </div>
+                  </section>
+
               </div>
             </div>
           </article>
@@ -129,17 +181,51 @@
             data-stage-label="Stage 1"
             aria-label="Stage 1 — surface"
           >
-            <div class="stage__inner stage__inner--one">
-              <div class="stage__media">
-                <video
-                  id="video-stage-1"
-                  class="stage__video stage__video--master"
-                  src="media/videoStage1.mp4"
-                  loop
-                  playsinline
-                  preload="auto"
-                  aria-label="Vidéo Stage 1 — audio source"
-                ></video>
+            <div class="stage__inner stage__inner--one stage__inner--feed">
+              <div class="video-feed video-feed--master" id="video-feed-master">
+
+                  <section class="video-feed__slide" data-slide="0">
+                      <h2 class="stage-chapter-title">
+                        <span class="stage-chapter-title__label">Chapitre 1</span>
+                        <span class="stage-chapter-title__sep"> : </span>
+                        <span class="stage-chapter-title__name">Cycle video</span>
+                      </h2>
+                    <div class="stage-1-scene">
+                      <div class="stage__media">
+                        <video
+                          id="video-stage-1-0"
+                          class="stage__video stage__video--master"
+                          src="media/videoStage1.mp4"
+                          loop
+                          playsinline
+                          preload="auto"
+                          aria-label="Vidéo Stage 1 — slide 1"
+                        ></video>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="video-feed__slide" data-slide="1">
+                      <h2 class="stage-chapter-title">
+                        <span class="stage-chapter-title__label">Chapitre 1</span>
+                        <span class="stage-chapter-title__sep"> : </span>
+                        <span class="stage-chapter-title__name">Cycle video</span>
+                      </h2>
+                    <div class="stage-1-scene">
+                      <div class="stage__media">
+                        <video
+                          id="video-stage-1-1"
+                          class="stage__video stage__video--master"
+                          src="media/video2A.MP4"
+                          loop
+                          playsinline
+                          preload="auto"
+                          aria-label="Vidéo Stage 1 — slide 2"
+                        ></video>
+                      </div>
+                    </div>
+                  </section>
+
               </div>
             </div>
           </article>
@@ -152,17 +238,7 @@
           aria-hidden="true"
         ></div>
 
-        <aside id="debug-hud" class="debug-hud" aria-label="Debug information">
-          <p class="debug-hud__title">Debug</p>
-          <ul class="debug-hud__list">
-            <li><kbd>1</kbd> — Stage 1 seul (debug)</li>
-            <li><kbd>3</kbd> — Stage 3 seul (debug)</li>
-            <li><kbd>Clic</kbd> — Activer / désactiver le portail (suit la souris)</li>
-            <li><kbd>M</kbd> — Couper / activer le son (vidéo Stage 1)</li>
-            <li><kbd>Échap</kbd> — Quitter le mode debug</li>
-          </ul>
-          <p id="debug-hud-status" class="debug-hud__status">Mode : normal</p>
-        </aside>
+    
 
       </div>
     </div>
@@ -170,19 +246,26 @@
 
   <!-- CHAPTER 2 — social feed with press-and-hold reveal posts -->
   <section id="view-chapter2" class="view" data-view="chapter2" aria-label="Chapter 2">
+    <h2 class="chapter-view-title">
+      <span class="chapter-view-title__label">Chapitre 2</span>
+      <span class="chapter-view-title__sep"> : </span>
+      <span class="chapter-view-title__name">Twitter</span>
+    </h2>
     <div class="chapter__content chapter__content--feed" id="chapter2-content">
       <div class="chapter2-app">
 
+
         <aside class="sidebar sidebar--left">
-          <div class="logo">𝕏</div>
+          <div class="logo"></div><!--
           <nav class="feed-nav" aria-label="Navigation du fil">
             <a href="#" class="feed-nav__link feed-nav__link--active">Accueil</a>
             <a href="#" class="feed-nav__link">Explorer</a>
             <a href="#" class="feed-nav__link">Notifications</a>
             <a href="#" class="feed-nav__link">Messages</a>
           </nav>
-          <button class="btn-post" type="button">Poster</button>
+          <button class="btn-post" type="button">Poster</button>-->
         </aside>
+        
 
         <main class="feed">
           
@@ -197,9 +280,9 @@
           <section class="panel">
             <h2>Tendances</h2>
             <ul class="trends">
-              <li><span class="trends__meta">Tendance · France</span><strong>#Hype</strong><span class="trends__meta">12,4 k posts</span></li>
-              <li><span class="trends__meta">Tendance · Culture</span><strong>#Surfait</strong><span class="trends__meta">8,1 k posts</span></li>
-              <li><span class="trends__meta">Tendance · Médias</span><strong>#DéjàVu</strong><span class="trends__meta">5,7 k posts</span></li>
+              <li><span class="trends__meta">Tendance · France</span><strong>#entrepreneur</strong><span class="trends__meta">12,4 k posts</span></li>
+              <li><span class="trends__meta">Tendance · Culture</span><strong>#lookmaxing</strong><span class="trends__meta">8,1 k posts</span></li>
+              <li><span class="trends__meta">Tendance · Médias</span><strong>#muscu</strong><span class="trends__meta">5,7 k posts</span></li>
             </ul>
           </section>
         </aside>
@@ -208,8 +291,13 @@
     </div>
   </section>
 
-  <!-- CHAPTER 3 — dual-track waveform + frequency crossfade -->
+  <!-- CHAPTER 3 — full-width waveform + horizontal crossfade switch -->
   <section id="view-chapter3" class="view" data-view="chapter3" aria-label="Chapter 3">
+    <h2 class="chapter-view-title">
+      <span class="chapter-view-title__label">Chapitre 3</span>
+      <span class="chapter-view-title__sep"> : </span>
+      <span class="chapter-view-title__name">Podcast</span>
+    </h2>
     <div class="chapter__content chapter__content--audio" id="chapter3-content">
       <main class="chapter3-stage">
 
@@ -229,6 +317,8 @@
             />
           </div>
         </aside>
+
+        <nav class="audio-chapters" id="audioChapters" aria-label="Chapitres audio"></nav>
 
       </main>
     </div>

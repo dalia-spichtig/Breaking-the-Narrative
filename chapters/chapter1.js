@@ -395,29 +395,179 @@
   
   
   /* ================================================================
-     VIDEO SYNC SYSTEM
-     Stage 1 = master (video + audio from videoStage1.mov only).
-     Stage 3 = slave (permanently muted, locked to master timing).
+     VIDEO FEED SCROLL — TikTok-style vertical snap between slides
+     Keeps master + slave feeds in sync (preserves stage overlay).
      ================================================================ */
+  class VideoFeedScrollSystem {
+    constructor(masterFeedSelector, slaveFeedSelector, onSlideChange) {
+      this.masterFeed = document.querySelector(masterFeedSelector);
+      this.slaveFeed = document.querySelector(slaveFeedSelector);
+      this.onSlideChange = onSlideChange;
+
+      this.slides = this.masterFeed?.querySelectorAll('.video-feed__slide') ?? [];
+      this.slideCount = this.slides.length;
+      this.currentIndex = 0;
+      this._syncRaf = null;
+      this._supportsScrollEnd = 'onscrollend' in window;
+
+      if (!this.masterFeed || !this.slaveFeed || this.slideCount < 2) return;
+
+      this._bindMasterScrollSync();
+      this._bindSlideDetection();
+      this._bindKeys();
+    }
+
+    _getSlideIndex(feed) {
+      const slide = feed.querySelector('.video-feed__slide');
+      const slideHeight = slide?.offsetHeight || feed.clientHeight;
+      if (!slideHeight) return 0;
+      return Math.round(feed.scrollTop / slideHeight);
+    }
+
+    _syncSlaveToMaster() {
+      this.slaveFeed.scrollTop = this.masterFeed.scrollTop;
+    }
+
+    _handleMasterScroll() {
+      if (!this._syncRaf) {
+        this._syncRaf = requestAnimationFrame(() => {
+          this._syncSlaveToMaster();
+          this._syncRaf = null;
+        });
+      }
+    }
+
+    _commitSlideChange(index) {
+      if (index < 0 || index >= this.slideCount || index === this.currentIndex) return;
+
+      this.currentIndex = index;
+      this._syncSlaveToMaster();
+      this.onSlideChange?.(index);
+    }
+
+    _bindMasterScrollSync() {
+      this._onMasterScrollHandler = () => this._handleMasterScroll();
+      this.masterFeed.addEventListener('scroll', this._onMasterScrollHandler, { passive: true });
+
+      if (this._supportsScrollEnd) {
+        this._onScrollEnd = () => {
+          this._syncSlaveToMaster();
+          const index = this._getSlideIndex(this.masterFeed);
+          this._commitSlideChange(index);
+        };
+        this.masterFeed.addEventListener('scrollend', this._onScrollEnd);
+      }
+    }
+
+    _bindSlideDetection() {
+      if (this._supportsScrollEnd || !('IntersectionObserver' in window)) return;
+
+      this._ioRatios = new Map();
+
+      this._io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const slideIndex = Number(entry.target.dataset.slide);
+            if (Number.isNaN(slideIndex)) return;
+            this._ioRatios.set(slideIndex, entry.isIntersecting ? entry.intersectionRatio : 0);
+          });
+
+          if (this._ioTimer) clearTimeout(this._ioTimer);
+          this._ioTimer = setTimeout(() => {
+            let bestIndex = this.currentIndex;
+            let bestRatio = 0;
+            this._ioRatios.forEach((ratio, idx) => {
+              if (ratio > bestRatio) {
+                bestRatio = ratio;
+                bestIndex = idx;
+              }
+            });
+            if (bestRatio >= 0.55) {
+              this._commitSlideChange(bestIndex);
+            }
+          }, 120);
+        },
+        { root: this.masterFeed, threshold: [0, 0.25, 0.5, 0.75, 1] }
+      );
+
+      this.slides.forEach((slide) => this._io.observe(slide));
+    }
+
+    goToSlide(index) {
+      const next = Math.max(0, Math.min(this.slideCount - 1, index));
+      const slide = this.slides[next];
+      if (!slide || next === this.currentIndex) return;
+
+      this.masterFeed.scrollTo({ top: slide.offsetTop, behavior: 'smooth' });
+    }
+
+    _bindKeys() {
+      this._onKeydown = (event) => {
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        if (event.code === 'ArrowDown') {
+          event.preventDefault();
+          this.goToSlide(this.currentIndex + 1);
+        } else if (event.code === 'ArrowUp') {
+          event.preventDefault();
+          this.goToSlide(this.currentIndex - 1);
+        }
+      };
+
+      window.addEventListener('keydown', this._onKeydown);
+    }
+
+    destroy() {
+      if (this._syncRaf) cancelAnimationFrame(this._syncRaf);
+      if (this._ioTimer) clearTimeout(this._ioTimer);
+
+      this._io?.disconnect();
+      this._io = null;
+
+      if (this._onMasterScrollHandler) {
+        this.masterFeed?.removeEventListener('scroll', this._onMasterScrollHandler);
+      }
+      if (this._onScrollEnd) {
+        this.masterFeed?.removeEventListener('scrollend', this._onScrollEnd);
+      }
+      if (this._onKeydown) {
+        window.removeEventListener('keydown', this._onKeydown);
+      }
+    }
+  }
+
+
+  /* ================================================================
+     VIDEO SYNC SYSTEM
+     Each slide = one master (Stage 1) + one slave (Stage 3).
+     ================================================================ */
+  const VIDEO_SLIDES = [
+    { master: '#video-stage-1-0', slave: '#video-stage-3-0' },
+    { master: '#video-stage-1-1', slave: '#video-stage-3-1' },
+  ];
+
   class VideoSyncSystem {
-    constructor(masterSelector, ...slaveSelectors) {
-      this.master = document.querySelector(masterSelector);
-      this.slaves = slaveSelectors
-        .map((selector) => document.querySelector(selector))
-        .filter(Boolean);
-  
-      /** Max drift (seconds) before slave is corrected — ~1 frame at 30fps */
+    constructor(slideSelectors) {
+      this.slides = slideSelectors
+        .map(({ master, slave }) => ({
+          master: document.querySelector(master),
+          slave: document.querySelector(slave),
+        }))
+        .filter((slide) => slide.master && slide.slave);
+
+      this.activeIndex = 0;
+      this.master = this.slides[0]?.master ?? null;
+      this.slaves = this.slides[0] ? [this.slides[0].slave] : [];
+
       this.driftThreshold = 0.034;
-  
       this._isCorrecting = false;
       this._audioUnlocked = false;
       this._isMuted = true;
-  
-      if (!this.master || this.slaves.length === 0) {
-        console.warn('[VideoSyncSystem] Master or slave video not found.');
+
+      if (this.slides.length === 0) {
+        console.warn('[VideoSyncSystem] No video slides found.');
         return;
       }
-  
+
       this._configureElements();
       this._bindMasterEvents();
       this._bindSlaveGuards();
@@ -426,28 +576,49 @@
       this._waitAndStart();
       this._bindAudioUnlock();
       this._bindMuteToggle();
+      this._bindPlaybackToggle();
       this._applyMasterAudio();
     }
-  
-    /**
-     * Master carries audio; slaves are permanently silent.
-     */
+
+    setActiveSlide(index) {
+      if (index < 0 || index >= this.slides.length || index === this.activeIndex) return;
+
+      const wasPlaying = this.master && !this.master.paused;
+      this._pauseAllSlides();
+
+      this.activeIndex = index;
+      this.master = this.slides[index].master;
+      this.slaves = [this.slides[index].slave];
+
+      this._forceSlavesSilent();
+      this._applyMasterAudio();
+      this._alignSlavesToMaster();
+
+      if (wasPlaying) {
+        this._playAll();
+      }
+    }
+
+    _pauseAllSlides() {
+      this.slides.forEach(({ master, slave }) => {
+        master.pause();
+        slave.pause();
+      });
+    }
+
     _configureElements() {
-      this.master.loop = true;
-  
-      /* Start muted so autoplay is allowed; audio enabled on first user gesture */
-      this.master.muted = true;
-      this.master.volume = 1;
-  
-      this.slaves.forEach((slave) => {
+      this.slides.forEach(({ master, slave }) => {
+        master.loop = true;
+        master.muted = true;
+        master.volume = 1;
         slave.loop = true;
       });
-  
+
       this._forceSlavesSilent();
     }
   
     _forceSlavesSilent() {
-      this.slaves.forEach((slave) => {
+      this.slides.forEach(({ slave }) => {
         slave.muted = true;
         slave.volume = 0;
         slave.setAttribute('muted', '');
@@ -487,12 +658,18 @@
      * Wait until all videos can play, align time, then start together.
      */
     _waitAndStart() {
-      Promise.all([
-        this._whenCanPlay(this.master),
-        ...this.slaves.map((slave) => this._whenCanPlay(slave)),
-      ]).then(() => {
+      const allVideos = this.slides.flatMap(({ master, slave }) => [master, slave]);
+
+      Promise.all(allVideos.map((video) => this._whenCanPlay(video))).then(() => {
         this._alignSlavesToMaster();
         this._playAll();
+
+        this.slides.forEach(({ master, slave }, index) => {
+          if (index !== this.activeIndex) {
+            master.pause();
+            slave.pause();
+          }
+        });
       });
     }
   
@@ -584,35 +761,45 @@
     }
   
     _bindMasterEvents() {
-      const master = this.master;
-  
-      master.addEventListener('play', () => this._mirrorPlaybackState());
-      master.addEventListener('pause', () => this._pauseAll());
-      master.addEventListener('seeking', () => {
-        this.slaves.forEach((slave) => {
-          slave.currentTime = master.currentTime;
-        });
-      });
-      master.addEventListener('seeked', () => {
-        this.slaves.forEach((slave) => {
-          slave.currentTime = master.currentTime;
-        });
-      });
-      master.addEventListener('ratechange', () => {
-        this.slaves.forEach((slave) => {
-          slave.playbackRate = master.playbackRate;
-        });
-      });
-      master.addEventListener('ended', () => {
-        /* loop=true; re-align at loop boundary */
-        this.slaves.forEach((slave) => {
-          slave.currentTime = master.currentTime;
-        });
-      });
-      master.addEventListener('timeupdate', () => {
-        if (!master.paused) {
+      this.slides.forEach(({ master }, index) => {
+        master.addEventListener('play', () => {
+          if (index !== this.activeIndex) return;
           this._mirrorPlaybackState();
-        }
+        });
+        master.addEventListener('pause', () => {
+          if (index !== this.activeIndex) return;
+          this._pauseAll();
+        });
+        master.addEventListener('seeking', () => {
+          if (index !== this.activeIndex) return;
+          this.slaves.forEach((slave) => {
+            slave.currentTime = master.currentTime;
+          });
+        });
+        master.addEventListener('seeked', () => {
+          if (index !== this.activeIndex) return;
+          this.slaves.forEach((slave) => {
+            slave.currentTime = master.currentTime;
+          });
+        });
+        master.addEventListener('ratechange', () => {
+          if (index !== this.activeIndex) return;
+          this.slaves.forEach((slave) => {
+            slave.playbackRate = master.playbackRate;
+          });
+        });
+        master.addEventListener('ended', () => {
+          if (index !== this.activeIndex) return;
+          this.slaves.forEach((slave) => {
+            slave.currentTime = master.currentTime;
+          });
+        });
+        master.addEventListener('timeupdate', () => {
+          if (index !== this.activeIndex) return;
+          if (!master.paused) {
+            this._mirrorPlaybackState();
+          }
+        });
       });
     }
   
@@ -620,9 +807,9 @@
      * Ensure slaves never output audio (even if attributes are changed).
      */
     _bindSlaveGuards() {
-      this.slaves.forEach((slave) => {
+      this.slides.forEach(({ slave }) => {
         const enforce = () => this._forceSlavesSilent();
-  
+
         slave.addEventListener('volumechange', enforce);
         slave.addEventListener('play', enforce);
       });
@@ -668,30 +855,84 @@
       window.addEventListener('keydown', (event) => {
         if (event.code !== 'KeyM' || event.repeat) return;
         if (event.metaKey || event.ctrlKey || event.altKey) return;
-  
+
         event.preventDefault();
         this._toggleMute();
       });
     }
+
+    /** Space — toggle play / pause on master + slaves together */
+    togglePlayback() {
+      if (!this.master) return;
+
+      if (this.master.paused) {
+        this._playAll();
+      } else {
+        this._pauseAll();
+      }
+    }
+
+    _bindPlaybackToggle() {
+      this._onPlaybackKeydown = (event) => {
+        if (event.code !== 'Space' || event.repeat) return;
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        if (
+          event.target instanceof HTMLInputElement &&
+          event.target.type !== 'range' &&
+          event.target.type !== 'button'
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+        this.togglePlayback();
+      };
+
+      window.addEventListener('keydown', this._onPlaybackKeydown);
+    }
+
+    destroy() {
+      if (this._onPlaybackKeydown) {
+        window.removeEventListener('keydown', this._onPlaybackKeydown);
+        this._onPlaybackKeydown = null;
+      }
+      this._pauseAllSlides();
+    }
   }
-  
-  
+
+
   /* ================================================================
      CHAPTER LIFECYCLE — wired to menu.js view switching
      ================================================================ */
   let appInstance = null;
   let videoSyncInstance = null;
+  let feedScrollInstance = null;
 
   function init() {
     if (appInstance) return;
 
-    videoSyncInstance = new VideoSyncSystem('#video-stage-1', '#video-stage-3');
     appInstance = new App();
+    videoSyncInstance = new VideoSyncSystem(VIDEO_SLIDES);
+    feedScrollInstance = new VideoFeedScrollSystem(
+      '#video-feed-master',
+      '#video-feed-slave',
+      (index) => {
+        const reveal = appInstance?.revealSystem;
+        if (reveal?.isActive) {
+          reveal._deactivateWithShrink();
+        } else if (reveal?._isClosing) {
+          reveal.deactivateImmediate();
+        }
+        videoSyncInstance?.setActiveSlide(index);
+      }
+    );
   }
 
   function destroy() {
-    document.querySelector('#video-stage-1')?.pause();
-    document.querySelector('#video-stage-3')?.pause();
+    feedScrollInstance?.destroy();
+    feedScrollInstance = null;
+
+    videoSyncInstance?.destroy();
 
     appInstance?.revealSystem?.deactivateImmediate();
     appInstance?.stageManager?.setDebugSolo(null);

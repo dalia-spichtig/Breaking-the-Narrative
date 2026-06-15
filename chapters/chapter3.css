@@ -1,6 +1,7 @@
 /* ==========================================================================
    CHAPTER 3 — Styles
    Scoped under .view[data-view="chapter3"] to avoid affecting other chapters.
+   Layout: full-width waveform + horizontal switch stacked vertically (centered).
    ========================================================================== */
 
 .view[data-view="chapter3"] {
@@ -15,16 +16,23 @@
   --grey: rgba(255, 255, 255, 0.25);
   --grey-dim: rgba(255, 255, 255, 0.08);
 
-  /* UI chrome */
+  /* UI chrome — horizontal switch beneath waveform */
   --track: 2.5px;
-  --thumb: 12px;
-  --thumb-ring: 2px;
-  --track-len: min(72cqh, 300px);
-  --switch-hit: calc(var(--thumb) + var(--thumb-ring) * 4);
+  --thumb: 10px;
+  --thumb-ring: 0px;
+  --track-len: min(28vw, 280px);
+  --switch-hit: calc(var(--thumb) + 1.25rem);
   --switch-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --wave-width: min(94vw, 1400px);
+  --wave-height: min(42vh, 420px);
+  --stage-gap: clamp(2.5rem, 8vh, 5rem);
 
   background: var(--black);
   color: var(--color-text-body);
+}
+
+.view[data-view="chapter3"] .chapter-view-title {
+  z-index: 20;
 }
 
 .view[data-view="chapter3"] .chapter__content--audio {
@@ -36,22 +44,28 @@
   border: none;
 }
 
+/* Vertical stack — waveform on top, switch directly below */
 .view[data-view="chapter3"] .chapter3-stage {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--stage-gap);
   width: 100%;
   height: 100%;
   min-height: 0;
+  padding: var(--stage-gap) 0;
 }
 
+/* Waveform — almost full viewport width */
 .view[data-view="chapter3"] .wave {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
+  flex: 0 0 auto;
+  width: var(--wave-width);
+  height: var(--wave-height);
   min-width: 0;
-  min-height: 0;
   background: var(--black);
   cursor: pointer;
 }
@@ -67,46 +81,44 @@
   filter: contrast(1.06);
 }
 
+/* Switch — centered beneath the waveform */
 .view[data-view="chapter3"] .switch {
-  container-type: size;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
+  flex: 0 0 auto;
+  width: var(--track-len);
+  height: var(--switch-hit);
   min-width: 0;
-  min-height: 0;
-  background: var(--black);
+  background: transparent;
 }
 
 .view[data-view="chapter3"] .switch__track {
   position: relative;
-  flex: 0 0 auto;
-  width: var(--switch-hit);
-  height: var(--track-len);
+  width: 100%;
+  height: var(--switch-hit);
 }
 
 .view[data-view="chapter3"] .switch__track::before {
   content: "";
   position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: var(--track);
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  top: 50%;
+  width: 100%;
+  height: var(--track);
+  transform: translateY(-50%);
   background: var(--white);
   pointer-events: none;
 }
 
 .view[data-view="chapter3"] #freqSlider {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--track-len);
-  height: var(--switch-hit);
+  inset: 0;
+  width: 100%;
+  height: 100%;
   margin: 0;
-  transform: translate(-50%, -50%) rotate(-90deg) scaleY(-1);
-  transform-origin: center center;
+  transform: none;
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
@@ -124,48 +136,42 @@
   -webkit-appearance: none;
   width: var(--thumb);
   height: var(--thumb);
-  margin-top: calc(
-    (var(--track) - var(--thumb) - var(--thumb-ring) * 2) / 2
-  );
-  border-radius: 50%;
+  margin-top: calc((var(--track) - var(--thumb)) / 2);
+  border-radius: 0;
   background: var(--white);
-  border: var(--thumb-ring) solid var(--white);
-  box-sizing: content-box;
+  border: none;
+  box-sizing: border-box;
   transition:
     box-shadow 0.22s var(--switch-ease),
-    transform 0.22s var(--switch-ease),
-    border-width 0.22s var(--switch-ease);
+    transform 0.22s var(--switch-ease);
 }
 
 .view[data-view="chapter3"] #freqSlider::-moz-range-thumb {
   width: var(--thumb);
   height: var(--thumb);
-  border-radius: 50%;
+  border-radius: 0;
   background: var(--white);
-  border: var(--thumb-ring) solid var(--white);
-  box-sizing: content-box;
+  border: none;
+  box-sizing: border-box;
   transition:
     box-shadow 0.22s var(--switch-ease),
-    transform 0.22s var(--switch-ease),
-    border-width 0.22s var(--switch-ease);
+    transform 0.22s var(--switch-ease);
 }
 
 .view[data-view="chapter3"] #freqSlider:hover::-webkit-slider-thumb {
-  border-width: calc(var(--thumb-ring) * 1.25);
+  transform: scale(1.08);
 }
 
 .view[data-view="chapter3"] #freqSlider:hover::-moz-range-thumb {
-  border-width: calc(var(--thumb-ring) * 1.25);
+  transform: scale(1.08);
 }
 
 .view[data-view="chapter3"] #freqSlider:active::-webkit-slider-thumb {
   transform: scale(0.92);
-  border-width: calc(var(--thumb-ring) * 0.85);
 }
 
 .view[data-view="chapter3"] #freqSlider:active::-moz-range-thumb {
   transform: scale(0.92);
-  border-width: calc(var(--thumb-ring) * 0.85);
 }
 
 .view[data-view="chapter3"] #freqSlider:focus-visible {
@@ -180,15 +186,76 @@
   box-shadow: 0 0 0 1px var(--white);
 }
 
-@media (max-width: 640px) {
-  .view[data-view="chapter3"] .chapter3-stage {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 2fr) minmax(0, 1fr);
-  }
+/* Chapter timeline — navigation par chapitres */
+.view[data-view="chapter3"] .audio-chapters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 2rem;
+  flex: 0 0 auto;
+  width: min(94vw, 1400px);
+  margin: 0;
+  padding: 0;
+}
 
+.view[data-view="chapter3"] .audio-chapter {
+  position: relative;
+  margin: 0;
+  padding: 0.35rem 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  cursor: pointer;
+  transition: color 0.22s var(--switch-ease);
+}
+
+.view[data-view="chapter3"] .audio-chapter:hover {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.view[data-view="chapter3"] .audio-chapter.is-active {
+  color: var(--white);
+}
+
+.view[data-view="chapter3"] .audio-chapter.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--white);
+  transform: scaleX(1);
+  transition: transform 0.22s var(--switch-ease);
+}
+
+.view[data-view="chapter3"] .audio-chapter:focus-visible {
+  outline: none;
+}
+
+.view[data-view="chapter3"] .audio-chapter:focus-visible::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--white);
+  opacity: 0.5;
+}
+
+@media (max-width: 640px) {
   .view[data-view="chapter3"] {
-    --track-len: min(68cqh, 180px);
-    --thumb: 10px;
-    --thumb-ring: 1.75px;
+    --wave-width: 96vw;
+    --wave-height: min(36vh, 300px);
+    --track-len: min(52vw, 220px);
+    --thumb: 9px;
+    --stage-gap: clamp(2rem, 6vh, 3.5rem);
   }
 }

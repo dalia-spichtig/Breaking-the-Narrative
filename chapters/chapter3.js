@@ -13,10 +13,18 @@ const AUDIO_B = "media/Xela1.mp3";
 const PEAK_COUNT = 512;
 const TUNING_BAND = 0.18;
 
+// Chapitres — timestamps basés sur Xela1.mp3 (Alex1.mp3 suit en parallèle)
+const soundStep = [
+  { name: "step", time: 0 },
+  { name: "step 2", time: 20 },
+  { name: "step 3", time: 45 },
+];
+
 let canvas = null;
 let ctx2d = null;
 let freqSlider = null;
 let wavePanel = null;
+let chapterNav = null;
 
 let audioCtx = null;
 let bufferA = null;
@@ -42,6 +50,7 @@ let playbackDuration = 0;
 let rafId = 0;
 let chapterInitialized = false;
 let bootToken = 0;
+let activeChapterIndex = -1;
 
 let onSliderInput = null;
 let onSliderPointerdown = null;
@@ -176,7 +185,7 @@ function startSourcesAt(offset = 0) {
   sourceA.connect(gainA);
   sourceB.connect(gainB);
 
-  playbackDuration = Math.min(bufferA.duration, bufferB.duration);
+  playbackDuration = bufferB.duration;
   playbackOffset = Math.max(0, Math.min(offset, playbackDuration - 0.001));
 
   const when = ctx.currentTime + 0.02;
@@ -234,6 +243,66 @@ function seekToRatio(ratio) {
       : clamped * playbackDuration;
   if (isPlaying) startSourcesAt(playbackOffset);
   else drawFrame();
+  updateActiveChapter();
+}
+
+function seekToTime(seconds) {
+  if (!bufferB) return;
+  const maxTime = bufferB.duration - 0.001;
+  playbackOffset = Math.max(0, Math.min(seconds, maxTime));
+  if (isPlaying) startSourcesAt(playbackOffset);
+  else drawFrame();
+  updateActiveChapter();
+}
+
+function getActiveChapterIndex(time) {
+  let active = 0;
+  for (let i = 0; i < soundStep.length; i++) {
+    if (time >= soundStep[i].time) active = i;
+    else break;
+  }
+  return active;
+}
+
+function updateActiveChapter(forcedIndex) {
+  if (!chapterNav) return;
+  const buttons = chapterNav.querySelectorAll(".audio-chapter");
+  if (!buttons.length) return;
+
+  const index =
+    typeof forcedIndex === "number"
+      ? forcedIndex
+      : getActiveChapterIndex(getPlaybackTime());
+
+  if (index === activeChapterIndex) return;
+
+  activeChapterIndex = index;
+  buttons.forEach((btn, i) => {
+    btn.classList.toggle("is-active", i === index);
+  });
+}
+
+function buildChapterNav() {
+  if (!chapterNav) return;
+
+  chapterNav.innerHTML = "";
+  activeChapterIndex = -1;
+
+  soundStep.forEach((step, index) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "audio-chapter";
+    btn.textContent = step.name;
+    btn.setAttribute("aria-label", `Aller à ${step.name}`);
+    btn.addEventListener("click", async () => {
+      if (audioCtx?.state === "suspended") await audioCtx.resume();
+      if (!isPlaying) await resumePlayback();
+      seekToTime(step.time);
+    });
+    chapterNav.appendChild(btn);
+  });
+
+  updateActiveChapter(0);
 }
 
 function getPlaybackTime() {
@@ -330,6 +399,7 @@ function drawFrame() {
   ctx2d.fill();
 
   ctx2d.restore();
+  updateActiveChapter();
 }
 
 function scheduleFrame() {
@@ -429,10 +499,12 @@ async function bootAudio(token) {
   peaksA = computePeaks(bufferA);
   peaksB = computePeaks(bufferB);
   createGraph();
-  playbackDuration = Math.min(bufferA.duration, bufferB.duration);
+  playbackDuration = bufferB.duration;
   resizeCanvas();
   applyMix(0, false);
+  buildChapterNav();
   drawFrame();
+  updateActiveChapter(0);
   await resumePlayback();
 }
 
@@ -446,8 +518,9 @@ function init() {
   canvas = document.getElementById("waveCanvas");
   freqSlider = document.getElementById("freqSlider");
   wavePanel = document.querySelector('[data-view="chapter3"] .panel--wave');
+  chapterNav = document.getElementById("audioChapters");
 
-  if (!canvas || !freqSlider || !wavePanel) return;
+  if (!canvas || !freqSlider || !wavePanel || !chapterNav) return;
 
   ctx2d = canvas.getContext("2d");
   bindEvents();
@@ -490,9 +563,11 @@ function destroy() {
   ctx2d = null;
   freqSlider = null;
   wavePanel = null;
+  chapterNav = null;
   mix = 0;
   playbackOffset = 0;
   playbackDuration = 0;
+  activeChapterIndex = -1;
   chapterInitialized = false;
 }
 
