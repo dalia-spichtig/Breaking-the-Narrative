@@ -433,14 +433,24 @@ ul {
    CHAPTER SELECTION GRID
    ========================================================================== */
 
+/* Selection view — maximize space for chapter bubbles */
+.view[data-view="selection"] {
+  padding-inline: clamp(0.5rem, 2vw, 1.25rem);
+  padding-bottom: var(--space-sm);
+}
+
 .selection {
   width: 100%;
-  max-width: var(--max-width);
-  padding: var(--space-md) 0;
+  max-width: none;
+  padding: 0;
 }
 
 .selection__header {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.selection__header:empty {
+  margin-bottom: 0;
 }
 
 .selection__title {
@@ -460,9 +470,8 @@ ul {
 .selection__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1rem, 3vw, 2rem);
-  width: 100%;
-  max-width: min(960px, 92vw);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  width: min(98vw, 96rem);
   margin: 0 auto;
 }
 
@@ -470,6 +479,7 @@ ul {
 
 .card--visual {
   display: block;
+  width: 100%;
   padding: 0;
   margin: 0;
   border: none;
@@ -523,7 +533,8 @@ ul {
 @media (max-width: 720px) {
   .selection__grid {
     grid-template-columns: 1fr;
-    max-width: min(20rem, 78vw);
+    width: min(92vw, 32rem);
+    gap: clamp(1.75rem, 6vw, 2.75rem);
   }
 }
 
