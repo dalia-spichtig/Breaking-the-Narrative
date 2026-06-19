@@ -48,7 +48,7 @@
   const nav = document.getElementById("global-nav");
   const introView = document.getElementById("view-intro");
   const introSequence = document.getElementById("intro-sequence");
-  const introTitle = introView?.querySelector(".intro__title");
+  const introTitle = introView?.querySelector(".intro__title-block");
   const introText = introView?.querySelector(".intro__text");
   const chapterInterstitial = document.getElementById("chapter-interstitial");
   const chapterInterstitialName = chapterInterstitial?.querySelector(

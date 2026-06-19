@@ -417,6 +417,18 @@ ul {
   margin-bottom: 0;
 }
 
+.intro__subtitle {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: var(--space-sm);
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
 .intro__text {
   font-size: var(--text-lg);
   color: var(--color-text-secondary);
@@ -499,14 +511,16 @@ ul {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(1.5rem, 4vw, 3rem);
-  width: min(98vw, 96rem);
+  width: min(90vw, 90rem);
   margin: 0 auto;
 }
 
 /* Chapter cards — image bubbles */
 
 .card--visual {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   padding: 0;
   margin: 0;
@@ -522,8 +536,8 @@ ul {
 
 .card--visual .card__image {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
   object-fit: contain;
   object-position: center;
   pointer-events: none;
@@ -561,7 +575,7 @@ ul {
 @media (max-width: 720px) {
   .selection__grid {
     grid-template-columns: 1fr;
-    width: min(92vw, 32rem);
+    width: min(80vw, 26rem);
     gap: clamp(1.75rem, 6vw, 2.75rem);
   }
 }
