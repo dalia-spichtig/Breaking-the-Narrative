@@ -24,8 +24,6 @@
     chapter3: { name: "Podcast" },
   };
 
-  const CHAPTER_TRANSITION_MS = 2500;
-
   /** Resolve chapter module at call time (scripts load after menu.js). */
   function getChapterModule(viewName) {
     switch (viewName) {
@@ -43,9 +41,8 @@
   let introPhase = 1;
   let introTransitioning = false;
 
-  /** Chapter interstitial */
+  /** Chapter interstitial — waits for a click before entering the chapter */
   let chapterTransitionActive = false;
-  let chapterTransitionTimer = null;
   let pendingChapter = null;
 
   const nav = document.getElementById("global-nav");
@@ -149,9 +146,16 @@
     return viewName.startsWith("chapter");
   }
 
+  function isChapterInterstitialWaiting() {
+    return (
+      chapterTransitionActive &&
+      chapterInterstitial &&
+      chapterInterstitial.classList.contains("is-visible") &&
+      !chapterInterstitial.classList.contains("is-exiting")
+    );
+  }
+
   function cancelChapterTransition() {
-    clearTimeout(chapterTransitionTimer);
-    chapterTransitionTimer = null;
     pendingChapter = null;
     chapterTransitionActive = false;
 
@@ -160,17 +164,22 @@
     chapterInterstitial.classList.remove("is-visible", "is-exiting");
     chapterInterstitial.hidden = true;
     chapterInterstitial.setAttribute("aria-hidden", "true");
+    chapterInterstitial.setAttribute("tabindex", "-1");
   }
 
   function finishChapterTransition() {
     const viewName = pendingChapter;
-    if (!viewName || !chapterInterstitial) {
-      cancelChapterTransition();
+    if (
+      !viewName ||
+      !chapterInterstitial ||
+      chapterInterstitial.classList.contains("is-exiting")
+    ) {
       return;
     }
 
     chapterInterstitial.classList.remove("is-visible");
     chapterInterstitial.classList.add("is-exiting");
+    chapterInterstitial.setAttribute("tabindex", "-1");
     navigateToDirect(viewName);
 
     waitForOpacityTransition(chapterInterstitial, function () {
@@ -179,7 +188,6 @@
       chapterInterstitial.setAttribute("aria-hidden", "true");
       chapterTransitionActive = false;
       pendingChapter = null;
-      chapterTransitionTimer = null;
     });
   }
 
@@ -210,10 +218,10 @@
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         chapterInterstitial.classList.add("is-visible");
+        chapterInterstitial.setAttribute("tabindex", "0");
+        chapterInterstitial.focus({ preventScroll: true });
       });
     });
-
-    chapterTransitionTimer = setTimeout(finishChapterTransition, CHAPTER_TRANSITION_MS);
   }
 
   function requestNavigate(viewName) {
@@ -300,6 +308,11 @@
     }
 
     if (chapterTransitionActive) {
+      if (event.target.closest("#chapter-interstitial")) {
+        event.preventDefault();
+        finishChapterTransition();
+        return;
+      }
       event.preventDefault();
       return;
     }
@@ -328,8 +341,17 @@
     advanceIntroSequence();
   }
 
+  function handleChapterInterstitialKeydown(event) {
+    if (!isChapterInterstitialWaiting()) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+    if (!event.target.closest("#chapter-interstitial")) return;
+    event.preventDefault();
+    finishChapterTransition();
+  }
+
   document.addEventListener("click", handleClick);
   document.addEventListener("keydown", handleIntroKeydown);
+  document.addEventListener("keydown", handleChapterInterstitialKeydown);
 
   /** Keep --nav-height in sync when the nav wraps on small screens */
   function syncNavHeight() {
@@ -342,6 +364,114 @@
   }
 
   window.addEventListener("resize", syncNavHeight);
+
+  /* --------------------------------------------------------------------------
+     MANOSPHERE PREVIEW — full-screen image overlay (P key to open)
+     -------------------------------------------------------------------------- */
+  (function initManospherePreview() {
+    const overlay = document.getElementById("manosphere-preview");
+    if (!overlay) return;
+
+    let isOpen = false;
+    let lastFocusedElement = null;
+
+    function isTypingTarget(target) {
+      if (!target || !(target instanceof Element)) return false;
+      const tag = target.tagName;
+      return (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        target.isContentEditable
+      );
+    }
+
+    function openPreview() {
+      if (isOpen) return;
+
+      lastFocusedElement = document.activeElement;
+      overlay.hidden = false;
+      overlay.setAttribute("aria-hidden", "false");
+
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          overlay.classList.add("is-visible");
+        });
+      });
+
+      isOpen = true;
+    }
+
+    function closePreview() {
+      if (!isOpen) return;
+
+      overlay.classList.remove("is-visible");
+      overlay.setAttribute("aria-hidden", "true");
+
+      let finalized = false;
+
+      function finalizeClose() {
+        if (finalized) return;
+        finalized = true;
+        overlay.removeEventListener("transitionend", onTransitionEnd);
+        overlay.hidden = true;
+      }
+
+      function onTransitionEnd(event) {
+        if (event.target !== overlay || event.propertyName !== "opacity") return;
+        finalizeClose();
+      }
+
+      overlay.addEventListener("transitionend", onTransitionEnd);
+      setTimeout(finalizeClose, 500);
+
+      isOpen = false;
+
+      if (
+        lastFocusedElement &&
+        typeof lastFocusedElement.focus === "function"
+      ) {
+        lastFocusedElement.focus();
+      }
+    }
+
+    function handlePreviewKeydown(event) {
+      if (isTypingTarget(event.target)) return;
+
+      const key = event.key;
+      if (key === "p" || key === "P") {
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        event.preventDefault();
+        if (!isOpen) openPreview();
+        return;
+      }
+
+      if (isOpen && key === "Escape") {
+        event.preventDefault();
+        closePreview();
+      }
+    }
+
+    function handlePreviewClick(event) {
+      if (!isOpen || !event.target.closest("#manosphere-preview")) return;
+      event.preventDefault();
+      event.stopPropagation();
+      closePreview();
+    }
+
+    document.addEventListener("keydown", handlePreviewKeydown);
+    document.addEventListener("click", handlePreviewClick, true);
+
+    window.ManospherePreview = {
+      open: openPreview,
+      close: closePreview,
+      destroy: function () {
+        closePreview();
+        document.removeEventListener("keydown", handlePreviewKeydown);
+        document.removeEventListener("click", handlePreviewClick, true);
+      },
+    };
+  })();
 
   /* Expose navigation globally so chapter scripts can use it if needed */
   window.AppNavigation = {

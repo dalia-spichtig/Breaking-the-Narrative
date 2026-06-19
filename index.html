@@ -92,8 +92,34 @@
     </div>
   </div>
 
-  <!-- Fullscreen chapter title interstitial (menu.js) -->
-  <div id="chapter-interstitial" class="chapter-interstitial" hidden aria-hidden="true">
+  <!-- Manosphère full-screen preview — P key to open, click to close (menu.js) -->
+  <div
+    id="manosphere-preview"
+    class="manosphere-preview"
+    hidden
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Manosphère"
+  >
+    <img
+      class="manosphere-preview__image"
+      src="media/manosphère_intro.png"
+      alt="Manosphère — Incels, MGTOW, MRA, PUA"
+      decoding="async"
+    />
+  </div>
+
+  <!-- Fullscreen chapter title interstitial — click to enter (menu.js) -->
+  <div
+    id="chapter-interstitial"
+    class="chapter-interstitial"
+    hidden
+    aria-hidden="true"
+    tabindex="-1"
+    role="button"
+    aria-label="Continuer vers le chapitre"
+  >
     <h2 class="chapter-interstitial__title">
       <span class="chapter-interstitial__name"></span>
     </h2>

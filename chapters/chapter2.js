@@ -48,8 +48,8 @@ const POSTS = [
   },
   {
     lines: [
-      "Pourquoi c’est devenu impossible de s'en sortir pour un jeune mec aujourd'hui ? Regardez autour de vous : le féminisme grapille toutes les places en entreprise avec les quotas, et l'immigration sature les aides sociales.",
-      "On vous vole votre avenir pendant que vous galérez. Réveillez-vous.",
+      "Pourquoi c’est devenu impossible de s'en sortir pour un jeune mec aujourd'hui ? Regardez autour de vous : le féminisme volent toutes les places en entreprise avec les quotas, et l'immigration sature les aides sociales.",
+      "On nous vole notre avenir pendant qu'on galère.",
     ],
     hidden:
       "Pour masquer les véritables causes économiques de la précarité des jeunes (crise du logement, inflation, précarisation de l'emploi), l'influenceur fabrique des coupables idéaux : les féministes, la justice ou l'immigration.",
@@ -61,7 +61,7 @@ const POSTS = [
       "la haine anti-hommes dans les médias et la destruction de la famille, on assiste au declin de la société.",
     ],
     hidden:
-      "Ce post exploite un sentiment de dépossession pour créer une fausse communauté de défense. La manosphère s'appuie sur des perceptions alarmantes : 52 % des 25-34 ans estiment qu'on s'acharne sur les hommes aujourd'hui, et 32 % des hommes pensent perdre leur pouvoir. En canalisant cette anxiété, ces espaces masculinistes ne protègent pas les hommes : ils agissent comme des passerelles numériques vers le suprémacisme et l'extrême droite. (Le taux d'utilisateurs communs entre manosphère et extrême droite sur YouTube atteint d'ailleurs 31,7 %).",
+      "Ce post exploite un sentiment de dépossession pour nourir une communauté artificielle. Face à l'anxiété de nombreux jeunes hommes (52 % jugent qu'on s'acharne sur eux et 32 % craignent de perdre leur pouvoir), la manosphère n'offre aucune protection. Elle sert plutôt de passerelle vers l'extrême droite.",
     comments: [9, 10],
   },
   {
@@ -159,7 +159,7 @@ const COMMENTS = [
   },
   {
     lines: [
-      "Exactement, ils veulent nous couper de nos racines et nous affaiblir. Si on ne se serre pas les coudes entre vrais suisses",
+      "Exactement, ils veulent nous couper de nos racines et nous affaiblir. Si on ne se serre pas les coudes entre nous",
       "on va se faire grand-remplacer dans nos propres pays.",
     ],
     hidden:
