@@ -13,9 +13,9 @@
   background: var(--color-bg);
   color: var(--color-text-body);
 
-  /* Shared title anchor — identical on Stage 1 (surface) and Stage 3 (revealed) */
-  --chapter1-title-top: calc(var(--nav-height) + var(--space-sm));
-  --chapter1-title-left: var(--space-md);
+  /* Shared title anchor — aligned with .nav__brand left edge */
+  --chapter1-title-top: var(--chapter-title-top);
+  --chapter1-title-left: var(--chapter-title-left);
 }
 
 /* Stage titles — pinned to the same spot on every slide and both layers */
@@ -26,11 +26,11 @@
   z-index: 5;
   margin: 0;
   padding: 0;
-  font-family: var(--font-ui);
-  font-size: var(--text-sm);
+  font-family: var(--font-sans);
+  font-size: var(--chapter-title-size);
   font-weight: 400;
   line-height: 1.3;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--chapter-title-tracking);
   text-transform: uppercase;
   white-space: nowrap;
   pointer-events: none;
@@ -181,14 +181,6 @@
   text-align: center;
 }
 
-.stage__inner--feed,
-.stage__inner--three {
-  padding: 0;
-  align-items: stretch;
-  justify-content: stretch;
-}
-
-
 /* ================================================================
    STAGE SYSTEM
    Each .stage is a fixed full-viewport layer.
@@ -201,7 +193,6 @@
   height: 100%;
   overflow: hidden;
   pointer-events: none;
-
 }
 
 .stage__inner {
@@ -215,6 +206,13 @@
   padding: 2rem;
   text-align: center;
   pointer-events: auto;
+}
+
+.stage__inner.stage__inner--feed,
+.stage__inner.stage__inner--three {
+  padding: 0;
+  align-items: stretch;
+  justify-content: stretch;
 }
 
 .stage__eyebrow {

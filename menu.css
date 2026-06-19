@@ -62,6 +62,14 @@
   --text-hero: clamp(2.5rem, 10vw, 5rem);
 
   --nav-height: clamp(3.5rem, 8vw, 4.5rem);
+  --nav-inline-padding: var(--space-md);
+
+  /* Chapter titles — shared by stage slides + chapter views */
+  --chapter-title-top: calc(var(--nav-height) + var(--space-sm));
+  --chapter-title-left: var(--nav-inline-padding);
+  --chapter-title-size: clamp(1.1rem, 2.8vw, 1.75rem);
+  --chapter-title-tracking: 0.08em;
+
   --transition: 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   --max-width: 72rem;
 }
@@ -172,7 +180,7 @@ ul {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-md);
+  padding: 0 var(--nav-inline-padding);
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
   z-index: 100;
@@ -544,16 +552,18 @@ ul {
 
 .chapter-view-title {
   position: fixed;
-  top: calc(var(--nav-height) + var(--space-sm));
-  left: var(--space-md);
+  top: var(--chapter-title-top);
+  left: var(--chapter-title-left);
   z-index: 50;
   margin: 0;
+  padding: 0;
   font-family: var(--font-sans);
-  font-size: var(--text-sm);
+  font-size: var(--chapter-title-size);
   font-weight: 400;
   line-height: 1.3;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--chapter-title-tracking);
   text-transform: uppercase;
+  white-space: nowrap;
   pointer-events: none;
   user-select: none;
 }
@@ -616,7 +626,7 @@ ul {
     flex-direction: column;
     align-items: flex-start;
     height: auto;
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-sm) var(--nav-inline-padding);
     gap: var(--space-xs);
   }
 

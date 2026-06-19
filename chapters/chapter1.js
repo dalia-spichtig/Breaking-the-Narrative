@@ -543,6 +543,10 @@
   const VIDEO_SLIDES = [
     { master: '#video-stage-1-0', slave: '#video-stage-3-0' },
     { master: '#video-stage-1-1', slave: '#video-stage-3-1' },
+    { master: '#video-stage-1-2', slave: '#video-stage-3-2' },
+    { master: '#video-stage-1-3', slave: '#video-stage-3-3' },
+    { master: '#video-stage-1-4', slave: '#video-stage-3-4' },
+    { master: '#video-stage-1-5', slave: '#video-stage-3-5' },
   ];
 
   class VideoSyncSystem {
@@ -592,11 +596,15 @@
 
       this._forceSlavesSilent();
       this._applyMasterAudio();
-      this._alignSlavesToMaster();
+      this._preloadAdjacent(index);
 
-      if (wasPlaying) {
-        this._playAll();
-      }
+      Promise.all([this.master, this.slaves[0]].map((video) => this._whenCanPlay(video))).then(() => {
+        this._alignSlavesToMaster();
+
+        if (wasPlaying) {
+          this._playAll();
+        }
+      });
     }
 
     _pauseAllSlides() {
@@ -654,22 +662,48 @@
       });
     }
   
+    _preloadSlide(index) {
+      const slide = this.slides[index];
+      if (!slide) return;
+
+      [slide.master, slide.slave].forEach((video) => {
+        if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) return;
+        video.preload = 'auto';
+        if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) {
+          video.load();
+        }
+      });
+    }
+
+    _preloadAdjacent(index) {
+      this._preloadSlide(index);
+      this._preloadSlide(index - 1);
+      this._preloadSlide(index + 1);
+    }
+
     /**
-     * Wait until all videos can play, align time, then start together.
+     * Wait until the active pair can play, align time, then start.
+     * Other slides preload in the background so scroll stays fluid.
      */
     _waitAndStart() {
-      const allVideos = this.slides.flatMap(({ master, slave }) => [master, slave]);
+      const { master, slave } = this.slides[this.activeIndex];
 
-      Promise.all(allVideos.map((video) => this._whenCanPlay(video))).then(() => {
+      Promise.all([master, slave].map((video) => this._whenCanPlay(video))).then(() => {
         this._alignSlavesToMaster();
         this._playAll();
 
-        this.slides.forEach(({ master, slave }, index) => {
+        this.slides.forEach(({ master: m, slave: s }, index) => {
           if (index !== this.activeIndex) {
-            master.pause();
-            slave.pause();
+            m.pause();
+            s.pause();
           }
         });
+      });
+
+      this.slides.forEach((_, index) => {
+        if (index !== this.activeIndex) {
+          this._preloadSlide(index);
+        }
       });
     }
   

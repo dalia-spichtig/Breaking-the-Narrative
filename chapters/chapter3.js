@@ -8,16 +8,20 @@
  * Web Audio API: synchronized dual-buffer playback + equal-power crossfade
  */
 
-const AUDIO_A = "media/Alex1.mp3";
-const AUDIO_B = "media/Xela1.mp3";
+const AUDIO_A = "media/podcast_piste1.mp3";
+const AUDIO_B = "media/podcast_piste2.mp3";
 const PEAK_COUNT = 512;
 const TUNING_BAND = 0.18;
+const DURATION_TOLERANCE = 0.05;
 
-// Chapitres — timestamps basés sur Xela1.mp3 (Alex1.mp3 suit en parallèle)
+// Chapitres — timestamps basés sur la durée partagée des deux pistes
 const soundStep = [
-  { name: "step", time: 0 },
-  { name: "step 2", time: 20 },
-  { name: "step 3", time: 45 },
+  { name: "Espace", time: 0 },
+  { name: "Autonomie", time: 32.29 },
+  { name: "Contrôle", time: 53.07 },
+  { name: "Marchandise", time: 76.22 },
+  { name: "Prédation", time: 102.05 },
+  { name: "Business", time: 137.17 },
 ];
 
 let canvas = null;
@@ -171,6 +175,29 @@ function applyMix(value, ramp = true) {
   }
 }
 
+function getSharedDuration() {
+  if (!bufferA || !bufferB) return 0;
+  return Math.min(bufferA.duration, bufferB.duration);
+}
+
+function syncPlaybackDuration() {
+  if (!bufferA || !bufferB) {
+    playbackDuration = 0;
+    return;
+  }
+
+  const diff = Math.abs(bufferA.duration - bufferB.duration);
+  if (diff > DURATION_TOLERANCE) {
+    console.warn(
+      "[Chapter3] Track durations differ — using shortest for sync:",
+      bufferA.duration,
+      bufferB.duration
+    );
+  }
+
+  playbackDuration = getSharedDuration();
+}
+
 function startSourcesAt(offset = 0) {
   const ctx = getContext();
   stopSources(false);
@@ -185,12 +212,12 @@ function startSourcesAt(offset = 0) {
   sourceA.connect(gainA);
   sourceB.connect(gainB);
 
-  playbackDuration = bufferB.duration;
+  syncPlaybackDuration();
   playbackOffset = Math.max(0, Math.min(offset, playbackDuration - 0.001));
 
   const when = ctx.currentTime + 0.02;
-  sourceA.start(when, playbackOffset % bufferA.duration);
-  sourceB.start(when, playbackOffset % bufferB.duration);
+  sourceA.start(when, playbackOffset);
+  sourceB.start(when, playbackOffset);
   playbackStart = when - playbackOffset;
 }
 
@@ -247,8 +274,8 @@ function seekToRatio(ratio) {
 }
 
 function seekToTime(seconds) {
-  if (!bufferB) return;
-  const maxTime = bufferB.duration - 0.001;
+  if (!bufferA || !bufferB) return;
+  const maxTime = playbackDuration - 0.001;
   playbackOffset = Math.max(0, Math.min(seconds, maxTime));
   if (isPlaying) startSourcesAt(playbackOffset);
   else drawFrame();
@@ -499,7 +526,7 @@ async function bootAudio(token) {
   peaksA = computePeaks(bufferA);
   peaksB = computePeaks(bufferB);
   createGraph();
-  playbackDuration = bufferB.duration;
+  syncPlaybackDuration();
   resizeCanvas();
   applyMix(0, false);
   buildChapterNav();

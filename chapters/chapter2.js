@@ -30,48 +30,48 @@ const POSTS = [
   },
   {
     lines: [
-      "Ce réseau commence déjà à me déprimer...",
-      "Il faut que je retourne sur tiktok d'urgence les féministes me font peur ici",
+      "Arrêtez d'être gentil, la réalité du terrain est totalement différente. Les femmes ne veulent pas d'un mec doux qui demande la permission pour tout.",
+      "Elles veulent de l'intensité, de la domination, de l'agressivité. C'est leur nature biologique profonde, peu importe ce que le féminisme essaie de vous faire croire.",
     ],
     hidden:
-      "Je l'ai reposté trois fois cette semaine. Mes potes pensent que je m'en fous complètement.",
-    comments: [2, 3],
+      "Ce discours utilise une fausse logique biologique pour transformer la solitude des hommes en argent. On leur vend la domination comme une vérité naturelle pour exploiter leur anxiété. Cette apologie de l'agressivité alimente directement la culture du viol.",
+    comments: [2, 3, 4],
   },
   {
     lines: [
-      "Bodycount c'est pas important",
-      "Vous êtes juste gay.",
+      "Pendant que l'État et le système te préparent à être un salarié précaire payé au SMIC, certains encaissent 10k/mois depuis une plage à Dubaï.",
+      "La société moderne veut des hommes faibles et dociles. Brise tes chaînes, rejoins ma formation et reprends le contrôle de ta vie. Le lien est en bio.",
     ],
     hidden:
-      "Ça me rappelle mon enfance mot pour mot. Je n'ose pas le dire publiquement.",
-    comments: [4, 0],
+      "L'influenceur fait miroiter une fausse promesse d'indépendance financière pour vendre des formations de développement personnel souvent vides et hors de prix.",
+    comments: [5, 6],
   },
   {
     lines: [
-      "L'un joue avec une balle, l'autre avec des boules. Dans tout les cas, cela démontre simplement à quel point l'argent est accessible partout.",
-      "Aujourd'hui, il n'y a plus aucune excuse pour ne pas devenir riche.",
+      "Pourquoi c’est devenu impossible de s'en sortir pour un jeune mec aujourd'hui ? Regardez autour de vous : le féminisme grapille toutes les places en entreprise avec les quotas, et l'immigration sature les aides sociales.",
+      "On vous vole votre avenir pendant que vous galérez. Réveillez-vous.",
     ],
     hidden:
-      "J'ai acheté les billets. Deux fois. Ne le répétez à personne.",
-    comments: [1, 2, 3],
+      "Pour masquer les véritables causes économiques de la précarité des jeunes (crise du logement, inflation, précarisation de l'emploi), l'influenceur fabrique des coupables idéaux : les féministes, la justice ou l'immigration.",
+    comments: [7, 8],
   },
   {
     lines: [
-      "Encore un truc surfait.",
-      "Bof, passez votre chemin.",
+      "Regardez la vérité en face : les hommes blancs hétéros sont les nouveaux parias de cette société. Entre la discrimination positive,",
+      "la haine anti-hommes dans les médias et la destruction de la famille, on assiste au declin de la société.",
     ],
     hidden:
-      "C'est le seul truc qui m'a fait sentir vivant cette année. Point.",
-    comments: [3, 4],
+      "Ce post exploite un sentiment de dépossession pour créer une fausse communauté de défense. La manosphère s'appuie sur des perceptions alarmantes : 52 % des 25-34 ans estiment qu'on s'acharne sur les hommes aujourd'hui, et 32 % des hommes pensent perdre leur pouvoir. En canalisant cette anxiété, ces espaces masculinistes ne protègent pas les hommes : ils agissent comme des passerelles numériques vers le suprémacisme et l'extrême droite. (Le taux d'utilisateurs communs entre manosphère et extrême droite sur YouTube atteint d'ailleurs 31,7 %).",
+    comments: [9, 10],
   },
   {
     lines: [
-      "Encore un truc surfait.",
-      "Bof, passez votre chemin.",
+      "La matrice tremble parce que des mecs comme Andrew Tate apprennent aux jeunes hommes à s'émanciper, à faire du cash et à manager des femmes au lieu de se soumettre.",
+      "Les accusations contre lui sont un complot pur et simple pour éteindre un homme libre. Devenez des leaders, apprenez le business, et reprenez le contrôle du marché.",
     ],
     hidden:
-      "C'est le seul truc qui m'a fait sentir vivant cette année. Point.",
-    comments: [3, 4],
+      "Sous couvert de libérer les hommes, les leaders du mouvement cachent des pratiques prédatrices et criminelles. Andrew Tate, idole de cette fraternité, est poursuivi pour viol et trafic d'êtres humains en Roumanie et au Royaume-Uni. Derrière les promesses de réussite, ces discours ne défendent pas les hommes : ils banalisent l'exploitation violente d'autrui pour générer du profit.",
+    comments: [11, 12],
   },
 ];
 
@@ -83,7 +83,7 @@ const COMMENTS = [
       "Ils doivent apprendre a controler leur pulsions, si non c'est eux qui payent le prix",
     ],
     hidden:
-      "Dès l'enfance : On valorise chez les garçons la force, la compétition et le mépris de la faiblesse, tandis qu'on enseigne aux filles la douceur et la docilité. ",
+      "Dès l'enfance on valorise chez les garçons la force, la compétition et le mépris de la faiblesse, tandis qu'on enseigne aux filles la douceur et la docilité. ",
   },
   {
     lines: [
@@ -91,7 +91,7 @@ const COMMENTS = [
       "De force et en punissant ceux qui enfreignent les règles.",
     ],
     hidden:
-      "À l'école : Les garçons sont « spécialisés » très tôt dans l'expression de la violence et de l'incivilité (ils représentent 96,7 % des sanctions pour violence sur autrui au collège). Ce n'est pas leurs muscles qui dictent ce comportement, mais une éducation qui associe la masculinité à la domination",
+      "À l'école les garçons sont « spécialisés » très tôt dans l'expression de la violence et de l'incivilité (ils représentent 96,7 % des sanctions pour violence sur autrui au collège). Ce n'est pas leurs muscles qui dictent ce comportement, mais une éducation qui associe la masculinité à la domination",
   },
   {
     lines: [
@@ -103,20 +103,93 @@ const COMMENTS = [
   },
   {
     lines: [
-      "C'est exactement ce que je me disais.",
-      "Rien de révolutionnaire cette année.",
+      "Exactement. Le porno ment pas, c'est ce qu'elles cherchent en secret. ",
+      "Si tu les bouscules pas, elles s'ennuient direct et te lâchent pour un des ces 10 mecs en reserve.",
     ],
     hidden:
-      "Je suis terrifié par le fait que tout le monde avance dans sa vie sauf moi.",
+      "Ce discours s'appuie sur la pornographie de masse pour saturer l'imaginaire des ados. Les conséquences sont graves : 47 % des garçons croient que les filles s'attendent à une agression physique pendant le sexe, et 42 % pensent qu’elles y prennent du plaisir. Le porno industriel remplace l'éducation sexuelle.",
   },
   {
     lines: [
-      "Passez votre chemin, circulez...",
-      "Il n'y a absolument rien à voir.",
+      "En plus maintenant tout est une agression sexuelle, le consentement veut plus rien dire. On t'accuse pour un oui ou pour un non.",
+      "tu peux plus rien faire aujourd'hui sans finir au tribunal.",
     ],
     hidden:
-      "J'y pense jour et nuit. C'est la meilleure chose que j'ai vue de ma vie entière.",
+      "Les communautés masculinistes exploitent la détresse et l'insécurité des jeunes hommes face à leurs premiers rapports. Au lieu de les aider, elles les radicalisent en inventant une crise de la masculinité causée par le féminisme. L'insécurité sexuelle est alors transformée en paranoïa et en haine des femmes.",
   },
+  {
+    lines: [
+      "Une meuf, faut lui parler mal, ou l'ignorer si tu veux qu'elle s'interesse à toi, c'est ça qui les excite.",
+      "C'est de la psychologie de base, elles aiment être soumises et humiliées.",
+    ],
+    hidden:
+      "La banalisation de la violence : Confondre les scénarios pornos et le désir réel valide des comportements criminels. Cette déformation touche de plein fouet les jeunes : 36 % des 18-24 ans pensent qu'une femme peut aimer être humiliée ou injuriée au lit. Ce que la manosphère vend comme de la psychologie est un conditionnement à la violence",
+  },
+  {
+    lines: [
+      "Tellement vrai, l'avenir fait peur, on sait même pas si on aura une retraite.",
+      "Il y a que les formations de mecs comme toi qui redonnent de l'espoir aux jeunes.",
+    ],
+    hidden:
+      "Ces influenceurs ciblent une jeunesse coincée dans une précarité et une incertitude économique permanente. Ils convertissent cette peur de l'avenir en argent. En vendant des solutions simplistes et des formations miracles, ils s'enrichissent sur le dos d'hommes brisés par le système",
+  },
+  {
+    lines: [
+      "L'homme se doit de ramener l'argent à la maison et mettre sa famille à l'abri,",
+      "C'est notre rôle naturel. On n'a pas le choix que de charbonner.",
+    ],
+    hidden:
+      "Cette rhétorique s'appuie sur une pression sociale immense : aujourd'hui, 70 % des hommes pensent qu'ils doivent assumer seuls la sécurité financière de leur famille. Ce marketing genré commence dès l'enfance avec des jouets qui enferment les garçons dans l'obligation de performance, de force et de compétition.",
+  },
+  {
+    lines: [
+      "Exact, on bosse comme des fous et ce sont les femmes ou les étrangers qui raflent les bonus et les postes de direction.",
+      "Le système nous a abandonnés pour les privilégier.",
+    ],
+    hidden:
+      "Il s'agit d'un détournement de la frustration. C'est un mécanisme clé de la manosphère. Au lieu de laisser les jeunes analyser les failles réelles du système économique (le capitalisme de connivence, l'inflation) qui les précarise, les influenceurs redirigent leur colère vers des boucs émissaires faciles : les femmes ou le féminisme.",
+  },
+  {
+    lines: [
+      "Du coup je passe mes soirées à regarder tes vidéos pour comprendre comment être une meilleure version de moi.",
+      "Force à nous, on va pas se laisser faire par cette époque de fous.",
+    ],
+    hidden:
+      "Ce transfert de culpabilité a un double avantage pour l'influenceur. Il protège le système capitaliste qui fait sa propre fortune, tout en enfermant son audience dans un cycle infini de ressentiment. Les jeunes hommes s'isolent dans la haine en ligne et consomment toujours plus de contenus antiféministes payants.",
+  },
+  {
+    lines: [
+      "Exactement, ils veulent nous couper de nos racines et nous affaiblir. Si on ne se serre pas les coudes entre vrais suisses",
+      "on va se faire grand-remplacer dans nos propres pays.",
+    ],
+    hidden:
+      "La solidarité vendue par ces groupes est un piège politique. Les données montrent que la manosphère sert de porte d'entrée à l'Alt-right (extrême droite américaine) et aux idéologies suprémacistes. La frustration identitaire y est méthodiquement convertie en haine raciale et politique.",
+  },
+  {
+    lines: [
+      "Les meufs passent leur vie à nous insulter et critiquer,",
+      "et après elles s'étonnent qu'on ne veulent plus d'elles.",
+    ],
+    hidden:
+      "Ce cyberharcèlement organisé détruit des vies. En raison de ce climat d'hostilité, 60 % des jeunes filles exposées à la misogynie en ligne déclarent une profonde tristesse, et un quart d'entre elles a déjà envisagé ou planifié un suicide. Hors ligne, la violence s'aggrave : la Suisse a par exemple enregistré 22 féminicides et 8 tentatives au cours de l'année 2025.",
+  },
+  {
+    lines: [
+      "Le business d'agence OnlyFans (OFM) c’est le cheat code.",
+      "Tu gères les comptes de filles, tu prends ta com.",
+    ],
+    hidden:
+      "C'est le Proxénétisme numérique (OFM). Les formations de Manager OnlyFans sont une nouvelle forme de proxénétisme. Des rapports officiels dénoncent des méthodes criminelles : les managers imposent des commissions abusives de plus de 50 % aux créatrices, exercent un harcèlement moral permanent et font pression pour produire des contenus extrêmes non consentis.",
+  },
+  {
+    lines: [
+      "Pour gérer une meuf, faut connaître ses points faibles.",
+      "Quand elle dit non, c’est juste une résistance psychologique. Il suffit juste de forcer un peu pour la convaincre.",
+    ],
+    hidden:
+      "Ce discours s'enracine dans les méthodes des Pick Up Artists (PUA), des coachs en séduction qui théorisent le contournement de la résistance des femmes. En apprenant explicitement aux jeunes hommes à ignorer le non d'une partenaire, ces techniques banalisent directement les agressions sexuelles et le viol.",
+  },
+
 ];
 
 // Faux profils (nom, pseudo, couleur avatar, initiale)

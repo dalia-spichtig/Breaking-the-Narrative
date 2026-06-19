@@ -38,17 +38,6 @@
   background: var(--bg);
 }
 
-.view[data-view="chapter2"] .chapter-view-title {
-  position: relative;
-  top: auto;
-  left: auto;
-  flex-shrink: 0;
-  align-self: flex-start;
-  margin: var(--space-sm) var(--space-md) 0;
-  z-index: 20;
-  background: var(--bg);
-}
-
 .view[data-view="chapter2"] .chapter__content--feed {
   flex: 1;
   min-height: 0;
