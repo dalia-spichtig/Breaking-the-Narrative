@@ -36,7 +36,7 @@
     <div class="intro intro--sequence intro--clickable" id="intro-sequence" tabindex="0" aria-label="Continuer">
       <h1 class="intro__title intro__step intro__step--visible">Breaking <br> the Narrative</h1>
       <p class="intro__text intro__step">
-        Video, Post X, Podcast. <br> Levons le voile sur les méchaniques des discours masculinistes. 
+        Vidéo, Post X, Podcast. <br> Levons le voile sur les méchaniques des discours masculinistes. 
       </p>
     </div>
   </section>
@@ -47,10 +47,50 @@
     <ul class="nav__links">
       <li><a class="nav__link" href="#" data-nav="selection">Menu</a></li>
       <li><a class="nav__link" href="#" data-nav="chapter1">Vidéo</a></li>
-      <li><a class="nav__link" href="#" data-nav="chapter2">X</a></li>
+      <li><a class="nav__link" href="#" data-nav="chapter2">Post X</a></li>
       <li><a class="nav__link" href="#" data-nav="chapter3">Podcast</a></li>
+      <li>
+        <a
+          class="nav__link nav__link--infos"
+          href="#"
+          role="button"
+          id="infos-trigger"
+          aria-haspopup="dialog"
+          aria-controls="infos-modal"
+          aria-expanded="false"
+          data-infos-open
+        >Infos</a>
+      </li>
     </ul>
   </nav>
+
+  <!-- Resource hub modal — supplementary sources & links (infos-modal.js) -->
+  <div
+    id="infos-modal"
+    class="infos-modal"
+    hidden
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="infos-modal-title"
+  >
+    <div class="infos-modal__backdrop" data-infos-close tabindex="-1"></div>
+    <div class="infos-modal__panel" role="document">
+      <header class="infos-modal__header">
+       
+        <h2 id="infos-modal-title" class="infos-modal__title">Ressources</h2>
+        <button
+          type="button"
+          class="infos-modal__close"
+          aria-label="Fermer la fenêtre Infos"
+          data-infos-close
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </header>
+      <div class="infos-modal__body" id="infos-modal-body" aria-label="Liste des ressources"></div>
+    </div>
+  </div>
 
   <!-- Fullscreen chapter title interstitial (menu.js) -->
   <div id="chapter-interstitial" class="chapter-interstitial" hidden aria-hidden="true">
@@ -485,6 +525,7 @@
 
   <!-- Core navigation logic -->
   <script src="menu.js" defer></script>
+  <script src="components/infos-modal.js" defer></script>
 
   <!-- Chapter-specific scripts — each exports an init hook called on view enter -->
   <script src="chapters/chapter1.js" defer></script>

@@ -19,8 +19,8 @@
 
   /** Titles shown during the chapter interstitial */
   const CHAPTER_TITLES = {
-    chapter1: { name: "Video" },
-    chapter2: { name: "Twitter" },
+    chapter1: { name: "Vidéo" },
+    chapter2: { name: "Post X" },
     chapter3: { name: "Podcast" },
   };
 
