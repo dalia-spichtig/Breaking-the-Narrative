@@ -370,7 +370,8 @@
      -------------------------------------------------------------------------- */
   (function initManospherePreview() {
     const overlay = document.getElementById("manosphere-preview");
-    if (!overlay) return;
+    const previewImage = overlay?.querySelector(".manosphere-preview__image");
+    if (!overlay || !previewImage) return;
 
     let isOpen = false;
     let lastFocusedElement = null;
@@ -413,16 +414,16 @@
       function finalizeClose() {
         if (finalized) return;
         finalized = true;
-        overlay.removeEventListener("transitionend", onTransitionEnd);
+        previewImage.removeEventListener("transitionend", onTransitionEnd);
         overlay.hidden = true;
       }
 
       function onTransitionEnd(event) {
-        if (event.target !== overlay || event.propertyName !== "opacity") return;
+        if (event.target !== previewImage || event.propertyName !== "opacity") return;
         finalizeClose();
       }
 
-      overlay.addEventListener("transitionend", onTransitionEnd);
+      previewImage.addEventListener("transitionend", onTransitionEnd);
       setTimeout(finalizeClose, 500);
 
       isOpen = false;
